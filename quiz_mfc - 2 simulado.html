@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulado MFC — Medicina de Família e Comunidade</title>
+<style>
+:root{
+  --bg:#0a0e14;
+  --bg-panel:#111826;
+  --bg-panel-2:#161f2e;
+  --border:#243146;
+  --text:#e6edf5;
+  --text-dim:#93a4bd;
+  --text-faint:#5d6b83;
+  --accent:#2dd4bf;
+  --accent-dim:#0f766e;
+  --accent-glow:rgba(45,212,191,0.15);
+  --ok:#34d399;
+  --ok-dim:#064e3b;
+  --bad:#f87171;
+  --bad-dim:#450a0a;
+  --warn:#fbbf24;
+  --radius:12px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{
+  margin:0;padding:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  min-height:100%;
+}
+body{
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(45,212,191,0.06), transparent 40%),
+    radial-gradient(circle at 85% 100%, rgba(45,212,191,0.04), transparent 40%);
+  background-attachment:fixed;
+}
+.app{
+  max-width:920px;
+  margin:0 auto;
+  padding:20px 16px 60px;
+}
+/* HEADER */
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 18px;
+  background:var(--bg-panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin-bottom:16px;
+}
+.brand{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.brand .title{
+  font-weight:700;
+  font-size:15px;
+  letter-spacing:0.3px;
+}
+.brand .subtitle{
+  font-size:11.5px;
+  color:var(--text-dim);
+  letter-spacing:0.4px;
+}
+.brand .dot{color:var(--accent);}
+.header-actions{
+  display:flex;
+  gap:8px;
+}
+/* BUTTONS */
+button{
+  font-family:inherit;
+  cursor:pointer;
+  border:none;
+  border-radius:8px;
+  font-size:13.5px;
+  font-weight:600;
+  padding:9px 16px;
+  transition:transform .08s ease, filter .15s ease, background .15s ease;
+}
+button:active{transform:scale(0.97);}
+button:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-primary{
+  background:var(--accent);
+  color:#03211d;
+}
+.btn-primary:hover:not(:disabled){filter:brightness(1.08);}
+.btn-secondary{
+  background:var(--bg-panel-2);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+.btn-secondary:hover:not(:disabled){border-color:var(--accent-dim);}
+.btn-ghost{
+  background:transparent;
+  color:var(--text-dim);
+  border:1px solid var(--border);
+}
+.btn-ghost:hover:not(:disabled){color:var(--text);}
+.btn-danger{
+  background:transparent;
+  color:var(--bad);
+  border:1px solid rgba(248,113,113,0.35);
+}
+.btn-sm{padding:7px 12px;font-size:12.5px;}
+
+/* INTRO SCREEN */
+.intro{
+  background:var(--bg-panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:36px 28px;
+  text-align:center;
+}
+.intro h1{
+  font-size:22px;
+  margin:0 0 8px;
+}
+.intro p{
+  color:var(--text-dim);
+  font-size:14.5px;
+  line-height:1.6;
+  max-width:560px;
+  margin:0 auto 22px;
+}
+.intro-stats{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-bottom:28px;
+}
+.intro-stat{
+  background:var(--bg-panel-2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px 20px;
+  min-width:110px;
+}
+.intro-stat .num{
+  font-size:22px;
+  font-weight:800;
+  color:var(--accent);
+}
+.intro-stat .lbl{
+  font-size:11.5px;
+  color:var(--text-dim);
+  margin-top:2px;
+}
+.intro-themes{
+  text-align:left;
+  background:var(--bg-panel-2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:16px 20px;
+  margin:0 auto 26px;
+  max-width:560px;
+  font-size:12.5px;
+  color:var(--text-dim);
+  line-height:1.8;
+  columns:2;
+  column-gap:24px;
+}
+@media (max-width:560px){
+  .intro-themes{columns:1;}
+}
+
+/* PROGRESS BAR */
+.progress-wrap{
+  background:var(--bg-panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px 18px;
+  margin-bottom:14px;
+}
+.progress-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.progress-label{
+  font-size:12.5px;
+  color:var(--text-dim);
+  font-weight:600;
+  letter-spacing:0.3px;
+}
+.progress-legend{
+  display:flex;
+  gap:12px;
+  font-size:11px;
+  color:var(--text-faint);
+}
+.legend-item{display:flex;align-items:center;gap:5px;}
+.legend-dot{width:9px;height:9px;border-radius:3px;display:inline-block;}
+.bar-track{
+  height:7px;
+  background:var(--bg-panel-2);
+  border-radius:6px;
+  overflow:hidden;
+  display:flex;
+}
+.bar-seg{height:100%;}
+
+/* QUESTION CARD */
+.card{
+  background:var(--bg-panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:22px 22px 20px;
+  margin-bottom:14px;
+}
+.qnum{
+  color:var(--text-faint);
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:4px;
+}
+.caso-box{
+  background:var(--bg-panel-2);
+  border-left:3px solid var(--accent-dim);
+  border-radius:6px;
+  padding:14px 16px;
+  margin-bottom:16px;
+  font-size:14.5px;
+  line-height:1.65;
+  color:var(--text);
+}
+.caso-label{
+  font-size:10.5px;
+  font-weight:800;
+  letter-spacing:0.6px;
+  color:var(--text-faint);
+  margin-bottom:6px;
+  text-transform:uppercase;
+}
+.pergunta{
+  font-size:16px;
+  font-weight:600;
+  line-height:1.5;
+  margin-bottom:18px;
+}
+.opcoes{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:6px;
+}
+.opcao{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:13px 15px;
+  background:var(--bg-panel-2);
+  border:1.5px solid var(--border);
+  border-radius:9px;
+  cursor:pointer;
+  transition:border-color .12s ease, background .12s ease;
+  font-size:14px;
+  line-height:1.5;
+}
+.opcao:hover{border-color:var(--accent-dim);}
+.opcao.selected{
+  border-color:var(--accent);
+  background:rgba(45,212,191,0.07);
+}
+.opcao.locked{cursor:default;}
+.opcao.correta-reveal{
+  border-color:var(--ok);
+  background:rgba(52,211,153,0.08);
+}
+.opcao.incorreta-reveal{
+  border-color:var(--bad);
+  background:rgba(248,113,113,0.07);
+}
+.opcao-letra{
+  flex:0 0 26px;
+  height:26px;
+  border-radius:50%;
+  background:var(--border);
+  color:var(--text-dim);
+  font-weight:800;
+  font-size:12.5px;
+  display:flex;align-items:center;justify-content:center;
+}
+.opcao.selected .opcao-letra{background:var(--accent);color:#03211d;}
+.opcao.correta-reveal .opcao-letra{background:var(--ok);color:#04220f;}
+.opcao.incorreta-reveal .opcao-letra{background:var(--bad);color:#2a0505;}
+.opcao-texto{flex:1;padding-top:2px;}
+.opcao-icon{flex:0 0 auto;font-size:15px;padding-top:2px;}
+
+/* FEEDBACK PANEL */
+.feedback{
+  margin-top:18px;
+  border-radius:10px;
+  padding:16px 18px;
+  border:1px solid;
+  animation:fadeIn .25s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.feedback.correct{background:rgba(52,211,153,0.06);border-color:rgba(52,211,153,0.35);}
+.feedback.incorrect{background:rgba(248,113,113,0.06);border-color:rgba(248,113,113,0.35);}
+.feedback-title{
+  font-weight:800;
+  font-size:14.5px;
+  margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.feedback.correct .feedback-title{color:var(--ok);}
+.feedback.incorrect .feedback-title{color:var(--bad);}
+.feedback-block{margin-bottom:12px;}
+.feedback-block:last-child{margin-bottom:0;}
+.feedback-label{
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  color:var(--text-faint);
+  margin-bottom:5px;
+}
+.feedback-text{
+  font-size:13.5px;
+  line-height:1.6;
+  color:var(--text);
+}
+.alt-exp{
+  font-size:13px;
+  line-height:1.55;
+  color:var(--text-dim);
+  padding:8px 0;
+  border-top:1px solid var(--border);
+}
+.alt-exp:first-child{border-top:none;padding-top:0;}
+.alt-exp b{color:var(--text);}
+
+/* NAV BAR */
+.navbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  background:var(--bg-panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px 18px;
+}
+.navbar-left, .navbar-right{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+/* RESULTS SCREEN */
+.results{
+  background:var(--bg-panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:30px 26px;
+}
+.results h1{
+  font-size:20px;
+  text-align:center;
+  margin:0 0 22px;
+}
+.results-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:12px;
+  margin-bottom:26px;
+}
+.result-stat{
+  background:var(--bg-panel-2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:16px;
+  text-align:center;
+}
+.result-stat .num{font-size:24px;font-weight:800;}
+.result-stat .lbl{font-size:11px;color:var(--text-dim);margin-top:4px;letter-spacing:0.3px;}
+.result-stat.ok .num{color:var(--ok);}
+.result-stat.bad .num{color:var(--bad);}
+.result-stat.warn .num{color:var(--warn);}
+.result-stat.acc .num{color:var(--accent);}
+.theme-breakdown{
+  margin-top:10px;
+}
+.theme-breakdown h2{
+  font-size:14px;
+  color:var(--text-dim);
+  margin:0 0 12px;
+  letter-spacing:0.3px;
+}
+.theme-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:9px 0;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+.theme-row:last-child{border-bottom:none;}
+.theme-name{flex:1 1 auto;color:var(--text);min-width:140px;}
+.theme-bar-track{
+  flex:1 1 120px;
+  height:7px;
+  background:var(--bg-panel-2);
+  border-radius:5px;
+  overflow:hidden;
+  min-width:80px;
+}
+.theme-bar-fill{height:100%;background:var(--accent);}
+.theme-count{
+  flex:0 0 auto;
+  font-size:12px;
+  color:var(--text-dim);
+  min-width:52px;
+  text-align:right;
+}
+.results-actions{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-top:26px;
+  flex-wrap:wrap;
+}
+.footnote{
+  text-align:center;
+  color:var(--text-faint);
+  font-size:11.5px;
+  margin-top:18px;
+}
+.hidden{display:none !important;}
+::selection{background:var(--accent-glow);}
+
+/* CUSTOM CONFIRM MODAL (replaces native confirm() which can be blocked in some environments) */
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(4,7,12,0.72);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+  padding:20px;
+  animation:fadeIn .15s ease;
+}
+.modal-box{
+  background:var(--bg-panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:24px 24px 20px;
+  max-width:420px;
+  width:100%;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+.modal-title{
+  font-size:15.5px;
+  font-weight:700;
+  margin-bottom:10px;
+  color:var(--text);
+}
+.modal-msg{
+  font-size:13.5px;
+  color:var(--text-dim);
+  line-height:1.6;
+  margin-bottom:20px;
+}
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+}
+
+@media (max-width:600px){
+  .card{padding:18px 16px;}
+  .header{padding:12px 14px;flex-wrap:wrap;gap:10px;}
+  .navbar{padding:12px 14px;}
+  .navbar-left,.navbar-right{flex:1 1 100%;justify-content:center;}
+  .pergunta{font-size:15px;}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="brand">
+      <div class="title"><span class="dot">●</span> Simulado MFC</div>
+      <div class="subtitle">Medicina de Família e Comunidade · 70 questões</div>
+    </div>
+    <div class="header-actions" id="headerActions"></div>
+  </div>
+
+  <div id="screenIntro"></div>
+  <div id="screenQuiz" class="hidden"></div>
+  <div id="screenResults" class="hidden"></div>
+
+</div>
+
+<div id="modalRoot"></div>
+
+<script>
+/* =========================================================
+   BANCO DE QUESTÕES — 70 questões de MFC
+   ========================================================= */
+const QUESTIONS = [
+{
+  tema:"Ferramentas de Abordagem Familiar",
+  caso:"João Pedro, 7 anos, é levado à consulta pela mãe, Regina, auxiliar de limpeza, preocupada com a queda no rendimento escolar do filho nas últimas semanas. Durante a anamnese ampliada, o médico de família decide construir o genograma da família para compreender melhor o contexto doméstico. Ele registra os pais, Regina e Toninho, unidos por uma linha reta contínua, indicando relação estável entre o casal. Ao representar o vínculo entre João Pedro e seu irmão mais velho, Lucas, de 15 anos, que frequentemente brigam por qualquer motivo dentro de casa, o médico utiliza uma linha em ziguezague entre os dois símbolos.",
+  pergunta:"O traçado utilizado entre os irmãos indica:",
+  opcoes:[
+    {texto:"Relação de proximidade e apoio mútuo entre os irmãos", correta:false, exp:"A linha em ziguezague não representa proximidade; vínculos de apoio próximo costumam ser representados por linhas paralelas múltiplas, não por traçado conflituoso."},
+    {texto:"Relação de conflito entre os irmãos", correta:true, exp:"A linha em ziguezague é o símbolo utilizado no genograma para representar relações marcadas por conflito entre membros da família."},
+    {texto:"Rompimento total de contato (corte de relação) entre os irmãos", correta:false, exp:"Corte de relação costuma ser indicado por traçado tracejado ou por barras cruzando a linha de vínculo, e não pelo ziguezague, que indica conflito ativo, não ausência de contato."},
+    {texto:"Vínculo indiferenciado, sem informação suficiente para qualquer interpretação", correta:false, exp:"O genograma é construído justamente para tornar visíveis os padrões relacionais; um traçado específico (ziguezague) já expressa informação clara sobre o tipo de relação, não ausência de dados."}
+  ],
+  raciocinio:"O genograma utiliza traçados padronizados para representar diferentes tipos de vínculo entre os membros de uma família. Reconhecer o significado de cada traçado (conflito, distanciamento, corte de relação) permite identificar rapidamente os padrões relacionais durante a consulta e orientar o plano de cuidado."
+},
+{
+  tema:"Ferramentas de Abordagem Familiar",
+  caso:"Marcelo, 45 anos, motorista de aplicativo, retorna à UBS para acompanhamento da hipertensão arterial, diagnosticada há dois anos, e relata ter se separado da esposa há seis meses após um período de desentendimentos frequentes. Durante a consulta, ele comenta que mantém contato distante, mas ainda cordial, com o pai, que mora na mesma cidade mas raramente o visita. Ao atualizar o genograma da família no prontuário, a médica de família desenha dois quadrados (Marcelo e seu pai) unidos por uma linha tracejada, representando esse afastamento sem ruptura completa. Já a relação entre Marcelo e a ex-esposa, representada por um círculo, é registrada por meio de duas linhas paralelas cruzadas por duas barras, uma vez que o divórcio já foi oficializado em cartório.",
+  pergunta:"A representação da relação entre Marcelo e a ex-esposa, com duas linhas cruzadas por barras, indica:",
+  opcoes:[
+    {texto:"Casamento estável em curso", correta:false, exp:"Um casamento estável seria representado por uma linha contínua simples entre os símbolos, sem barras de interrupção."},
+    {texto:"Separação/divórcio formalizado", correta:true, exp:"Barras cruzando a linha de união entre os símbolos representam separação ou divórcio formal, distinguindo-se do simples distanciamento emocional."},
+    {texto:"Distanciamento emocional sem separação formal, como o traçado usado entre Marcelo e o pai", correta:false, exp:"Distanciamento emocional sem ruptura formal é representado por linha tracejada — exatamente o traçado usado entre Marcelo e o pai no caso, e não pelas barras de corte."},
+    {texto:"Conflito ativo e frequente entre o ex-casal", correta:false, exp:"Conflito ativo é tipicamente representado por linha em ziguezague, e não por barras cruzando a linha de união, que indicam ruptura formal do vínculo conjugal."}
+  ],
+  raciocinio:"Cada símbolo do genograma carrega um significado específico e distinto: linha tracejada indica distanciamento emocional sem ruptura formal; barras cruzando a linha de união indicam separação/divórcio; ziguezague indica conflito. Diferenciar esses traçados é essencial para a leitura correta da dinâmica familiar."
+},
+{
+  tema:"Ferramentas de Abordagem Familiar",
+  caso:"Durante uma atividade de educação médica continuada, um estudante de medicina revisa o prontuário de uma família de três gerações acompanhada há anos pela equipe de saúde da família: os avós, hipertensos e já aposentados; o casal de pais, ambos trabalhadores rurais; e os três netos, ainda em idade escolar. Ao observar o genograma anexado ao prontuário, ele nota que os avós aparecem representados na linha horizontal superior do desenho, os pais na linha intermediária e os netos na linha inferior, todos conectados por linhas verticais que indicam filiação entre as gerações.",
+  pergunta:"Essa estrutura em três linhas horizontais sobrepostas representa corretamente:",
+  opcoes:[
+    {texto:"A hierarquia de autoridade familiar, do membro mais poderoso ao menos poderoso", correta:false, exp:"O genograma não representa hierarquia de poder ou autoridade dentro da família; a disposição em linhas reflete gerações, não relações de mando."},
+    {texto:"As gerações da família, organizadas da mais antiga para a mais recente", correta:true, exp:"O genograma organiza os membros por gerações, geralmente com a geração mais antiga na linha superior, permitindo visualizar a estrutura familiar ao longo do tempo."},
+    {texto:"O grau de proximidade afetiva entre os membros da família", correta:false, exp:"Proximidade ou distanciamento afetivo é representado pelos traçados de linha entre os símbolos (contínua, tracejada, ziguezague), e não pela disposição em linhas geracionais."},
+    {texto:"A ordem cronológica das consultas realizadas na unidade de saúde", correta:false, exp:"O genograma não registra o histórico de consultas; ele representa a composição e as relações da estrutura familiar ao longo das gerações."}
+  ],
+  raciocinio:"O genograma organiza os membros da família por gerações (avós, pais, filhos), permitindo visualizar rapidamente a estrutura familiar ao longo do tempo, o que auxilia na compreensão do contexto de cuidado da pessoa atendida."
+},
+{
+  tema:"PNAB e Organização da Atenção Básica",
+  caso:"Em uma reunião de planejamento estratégico, o gestor municipal de saúde reúne a equipe da UBS Jardim das Flores para discutir a reformulação do fluxo de atendimento da unidade, que vem recebendo críticas da população por conta de longas filas e encaminhamentos considerados excessivos para o pronto-socorro. Durante a discussão, surge a dúvida sobre qual deveria ser, de fato, o papel dessa unidade dentro da organização do sistema de saúde municipal, já que alguns membros da equipe defendem que a UBS deveria funcionar apenas como um posto de triagem inicial, encaminhando a maior parte dos casos para outros serviços.",
+  pergunta:"De acordo com a Política Nacional de Atenção Básica, a atenção primária deve funcionar, na organização do sistema de saúde, como:",
+  opcoes:[
+    {texto:"Um serviço de encaminhamento cujo papel principal é direcionar todos os casos para especialistas", correta:false, exp:"A APS não é apenas um filtro de encaminhamento; ela resolve a maior parte das demandas de saúde e coordena o cuidado quando o encaminhamento é de fato necessário."},
+    {texto:"A porta de entrada preferencial do sistema, responsável por acolher novas necessidades e coordenar o cuidado", correta:true, exp:"Conforme a PNAB, a atenção básica é atenção de primeiro contato, contínua e coordenada, funcionando como entrada preferencial ao sistema de saúde."},
+    {texto:"Um serviço destinado exclusivamente a casos de baixa complexidade que não geram necessidade de acompanhamento contínuo", correta:false, exp:"A atenção básica também acompanha condições crônicas e complexas ao longo do tempo (longitudinalidade), não se limitando a casos simples e pontuais."},
+    {texto:"Um nível assistencial paralelo, que atua de forma independente dos demais pontos da rede", correta:false, exp:"A atenção básica deve estar integrada e articulada com os demais níveis de atenção, coordenando o cuidado, e não atuando de forma isolada."}
+  ],
+  raciocinio:"A PNAB define a atenção básica pelo conjunto de atributos de primeiro contato, longitudinalidade, integralidade e coordenação, o que a torna a organizadora do cuidado dentro da rede de atenção à saúde."
+},
+{
+  tema:"PNAB e Organização da Atenção Básica",
+  caso:"A equipe de saúde da família da UBS Vila Esperança percebe, ao analisar as fichas de atendimento dos últimos seis meses, que grande parte dos usuários cadastrados no território trabalha em regime CLT, das 8h às 18h, em uma fábrica têxtil próxima, e por isso não consegue comparecer às consultas agendadas no horário habitual de funcionamento da unidade (8h às 17h, de segunda a sexta-feira). Como consequência, muitas dessas famílias acabam perdendo o acompanhamento longitudinal de condições crônicas, como hipertensão e diabetes, e recorrem esporadicamente ao pronto-atendimento municipal.",
+  pergunta:"Para garantir o acesso e a continuidade do cuidado a essa parcela da população, a estratégia mais alinhada aos princípios da organização da atenção básica seria:",
+  opcoes:[
+    {texto:"Orientar que esses usuários utilizem exclusivamente serviços de urgência quando necessário", correta:false, exp:"Substituir o acompanhamento longitudinal na APS por atendimentos pontuais de urgência fragmenta o cuidado e não resolve o problema de acesso identificado."},
+    {texto:"Ampliar ou adequar o horário de funcionamento da unidade às necessidades da população do território", correta:true, exp:"A organização do processo de trabalho deve considerar as necessidades locais da população coberta, incluindo horários que ampliem o acesso e garantam a longitudinalidade do cuidado."},
+    {texto:"Restringir o cadastro dessas famílias na equipe, já que não podem comparecer com frequência", correta:false, exp:"Excluir famílias do cadastro por dificuldade de horário contraria o princípio de responsabilização por uma população adstrita e amplia a desigualdade de acesso."},
+    {texto:"Transferir a responsabilidade pelo cuidado dessas famílias para o pronto-socorro municipal", correta:false, exp:"Transferir o cuidado continuado para serviços de urgência rompe com a longitudinalidade e a coordenação, funções centrais da atenção básica."}
+  ],
+  raciocinio:"A organização do processo de trabalho da equipe deve considerar as necessidades locais e a realidade da população coberta, o que pode incluir a adequação de horários para ampliar o acesso e preservar a longitudinalidade do cuidado."
+},
+{
+  tema:"PNAB e Organização da Atenção Básica",
+  caso:"Uma equipe de Saúde da Família recém-formada está prestes a assumir a cobertura de um novo bairro na periferia da cidade, ainda sem cadastro territorial consolidado. Antes de iniciar as visitas domiciliares, a enfermeira da equipe sugere reunir a equipe para definir os limites da área de abrangência, considerando que parte do bairro cresceu de forma desordenada nos últimos anos, com ocupações irregulares e aumento populacional não registrado nos dados oficiais mais recentes.",
+  pergunta:"Segundo os princípios da organização da atenção básica, a definição do território de atuação da equipe deve se basear em:",
+  opcoes:[
+    {texto:"Apenas limites administrativos fixos definidos há décadas, sem necessidade de atualização", correta:false, exp:"O território deve ser entendido como dinâmico, exigindo revisão contínua, e não permanecer fixo indefinidamente com base em limites administrativos antigos."},
+    {texto:"Dados epidemiológicos atuais, cadastro territorial e capacidade operacional da equipe, com revisão contínua", correta:true, exp:"A territorialização exige diagnóstico local combinando dados objetivos, escuta comunitária e observação do território, com revisão periódica conforme a realidade muda."},
+    {texto:"Exclusivamente a distância física entre a unidade de saúde e as residências", correta:false, exp:"A distância física é apenas um dos elementos possíveis; a definição do território deve considerar também dados epidemiológicos, vulnerabilidade e capacidade operacional da equipe."},
+    {texto:"A preferência dos usuários sobre qual equipe desejam ser atendidos, independentemente do endereço", correta:false, exp:"A organização por território pressupõe responsabilidade sanitária por uma população adstrita a uma área definida, e não escolha livre e individual da equipe pelo usuário."}
+  ],
+  raciocinio:"A territorialização exige diagnóstico local combinando dados objetivos, escuta comunitária e observação do território, revisando periodicamente os limites conforme a realidade populacional e operacional muda."
+},
+{
+  tema:"PNAB e Organização da Atenção Básica",
+  caso:"Durante o planejamento anual da UBS Central, a equipe realiza uma vistoria na estrutura física da unidade e constata que a rampa de acesso está com o piso danificado, dificultando a entrada de cadeirantes e idosos com dificuldade de locomoção, além de identificar que o fluxo de atendimento na recepção costuma gerar confusão entre os usuários sobre onde aguardar cada tipo de atendimento.",
+  pergunta:"Segundo os princípios de organização da atenção básica, a resposta adequada da equipe é:",
+  opcoes:[
+    {texto:"Ignorar a questão, pois estrutura física não é responsabilidade da equipe de saúde", correta:false, exp:"A adequação da infraestrutura e dos fluxos ao território e à população faz parte da organização do processo de trabalho da atenção básica, não podendo ser simplesmente ignorada."},
+    {texto:"Adequar a infraestrutura, a ambiência e os fluxos de atendimento às necessidades da população e do território", correta:true, exp:"A organização da atenção básica prevê que a infraestrutura, a ambiência e os fluxos sejam adequados à população e ao território, garantindo acesso real e não apenas teórico."},
+    {texto:"Orientar que pessoas com dificuldade de locomoção sejam atendidas em outra unidade mais distante, mas já adaptada", correta:false, exp:"Deslocar o problema para outra unidade distante cria nova barreira de acesso, contrariando o princípio de que a própria unidade deve se adequar às necessidades de sua população adstrita."},
+    {texto:"Aguardar reforma geral do prédio antes de tomar qualquer providência", correta:false, exp:"A equipe pode e deve buscar adequações possíveis nos fluxos e na ambiência mesmo antes de uma reforma estrutural completa, evitando que barreiras de acesso persistam sem resposta."}
+  ],
+  raciocinio:"A organização da atenção básica prevê que a infraestrutura, a ambiência e os fluxos de atendimento sejam adequados à população e ao território, garantindo acesso real e equânime a todos os usuários."
+},
+{
+  tema:"Populações Vulneráveis",
+  caso:"O território coberto pela equipe de Saúde da Família do bairro Nova Aurora é caracterizado por ocupações irregulares, ausência de saneamento básico em parte das ruas, alta rotatividade populacional e histórico de violência armada frequente. Nos últimos meses, a equipe percebeu aumento expressivo de casos de escabiose, diarreia infecciosa em crianças e agravamento de quadros de asma, associados às condições precárias de moradia.",
+  pergunta:"Diante desse cenário, a decisão mais adequada da equipe de APS é:",
+  opcoes:[
+    {texto:"Aplicar exatamente o mesmo protocolo de atendimento utilizado em territórios de baixa vulnerabilidade, sem qualquer adaptação", correta:false, exp:"Tratar territórios de vulnerabilidade muito diferente da mesma forma ignora o princípio da equidade, que exige respostas diferenciadas para reduzir desigualdades injustas."},
+    {texto:"Intensificar a identificação de vulnerabilidades, priorizando ações e acompanhamento mais próximo às famílias de maior risco", correta:true, exp:"Diante de alta vulnerabilidade, a equipe deve intensificar a identificação de riscos e direcionar mais recursos e acompanhamento a quem mais precisa, seguindo o princípio da equidade."},
+    {texto:"Encaminhar automaticamente todas as famílias do território para acompanhamento exclusivamente hospitalar", correta:false, exp:"Encaminhar toda a população para o nível hospitalar contraria o papel coordenador e resolutivo da atenção primária, que deve responder à maior parte das necessidades no próprio território."},
+    {texto:"Reduzir a frequência de visitas domiciliares até que a situação social do território melhore espontaneamente", correta:false, exp:"Reduzir o acompanhamento em um território de alta vulnerabilidade tende a agravar os riscos, indo na direção oposta à resposta proporcional que a equidade exige."}
+  ],
+  raciocinio:"Diante de alta vulnerabilidade, a equipe deve intensificar a identificação de riscos e direcionar mais recursos e acompanhamento a quem mais precisa, seguindo o princípio da equidade em saúde."
+},
+{
+  tema:"Populações Vulneráveis",
+  caso:"Durante uma visita domiciliar de rotina, a técnica de enfermagem percebe que Ana Clara, de 2 anos, faltou às últimas três consultas de puericultura agendadas na UBS. Ao conversar com a mãe, Débora, de 24 anos, desempregada há quatro meses, ela relata dificuldade financeira para comprar alimentos suficientes para a família, composta também por outros dois filhos pequenos, e menciona que muitas vezes prioriza levar as crianças mais novas ao mercado informal de trocas de alimentos do bairro em vez de comparecer às consultas agendadas.",
+  pergunta:"A conduta mais adequada da equipe, considerando o conceito de vulnerabilidade na APS, é:",
+  opcoes:[
+    {texto:"Aguardar que a família retorne espontaneamente à unidade, já que a falta é responsabilidade exclusiva dos pais", correta:false, exp:"Adotar postura passiva diante de faltas repetidas em contexto de vulnerabilidade contraria o papel ativo da equipe na identificação e resposta a riscos no território."},
+    {texto:"Realizar busca ativa, avaliar a insegurança alimentar e articular apoio com a rede intersetorial disponível", correta:true, exp:"Vulnerabilidade exige resposta ativa da equipe: busca ativa da criança faltosa, avaliação da insegurança alimentar e articulação intersetorial, sem punir a família nem fragmentar o cuidado."},
+    {texto:"Notificar a família ao Conselho Tutelar imediatamente, sem qualquer avaliação prévia da situação", correta:false, exp:"Notificação sem avaliação prévia é uma medida desproporcional; a conduta inicial deve ser de busca ativa, escuta e articulação de suporte, reservando notificações a situações que exijam proteção legal específica."},
+    {texto:"Transferir o caso para atendimento hospitalar especializado, encerrando o acompanhamento pela UBS", correta:false, exp:"Encerrar o acompanhamento na atenção básica fragmenta o cuidado longitudinal, que é justamente o que a criança em situação de vulnerabilidade mais necessita."}
+  ],
+  raciocinio:"Vulnerabilidade não é sinônimo de pobreza isolada, mas exige resposta ativa da equipe: busca ativa, avaliação da situação e articulação intersetorial, sem punir a família nem fragmentar o cuidado longitudinal."
+},
+{
+  tema:"Populações Vulneráveis",
+  caso:"A comunidade rural de Serra Verde fica a 40 km da unidade de saúde mais próxima, acessível apenas por estrada de terra que fica intransitável em dias de chuva. A maioria das famílias vive da agricultura de subsistência, com baixa escolaridade e limitado acesso a transporte próprio ou coletivo, dependendo do carro de um vizinho ou de caronas esporádicas para chegar à cidade.",
+  pergunta:"Sob a ótica da equidade em saúde, a equipe da APS deve:",
+  opcoes:[
+    {texto:"Oferecer exatamente os mesmos recursos e frequência de atendimento disponibilizados às famílias urbanas próximas à unidade", correta:false, exp:"Oferecer o mesmo padrão de atendimento a populações com necessidades e barreiras de acesso muito diferentes contraria o princípio da equidade, que exige respostas proporcionais à necessidade."},
+    {texto:"Reconhecer a maior dificuldade de acesso dessa população e organizar estratégias diferenciadas, como visitas programadas mais frequentes", correta:true, exp:"A equidade exige tratar desigualmente os desiguais, oferecendo mais suporte a quem enfrenta mais barreiras de acesso, como estratégias diferenciadas de visita e acompanhamento."},
+    {texto:"Orientar que essas famílias resolvam o problema de transporte por conta própria, sem qualquer adaptação do serviço", correta:false, exp:"Deixar a resolução do problema de acesso inteiramente a cargo da família, sem qualquer adaptação da equipe, contraria o papel da atenção primária de reduzir barreiras de acesso."},
+    {texto:"Excluir essas famílias do cadastro da equipe, já que estão fora do alcance geográfico habitual", correta:false, exp:"Excluir uma população do cadastro por dificuldade de acesso amplia a desigualdade, contrariando diretamente o princípio da equidade e da universalidade do cuidado."}
+  ],
+  raciocinio:"A equidade exige tratar desigualmente os desiguais, oferecendo mais suporte e estratégias diferenciadas a quem enfrenta mais barreiras de acesso, sem reduzir a responsabilidade da equipe sobre essa população."
+},
+{
+  tema:"Saúde Mental - Depressão",
+  caso:"Marina, 29 anos, professora de educação infantil, retorna à UBS para consulta de seguimento três meses após o início de sertralina 50mg/dia, prescrita para episódio depressivo moderado desencadeado após a perda do emprego anterior. Ela relata que o humor melhorou em relação ao início do tratamento, consegue voltar a interagir com os colegas de trabalho no novo emprego, mas ainda apresenta anedonia leve em relação a atividades que antes lhe davam prazer, como pintura, além de despertar precoce ocasional durante a madrugada.",
+  pergunta:"Considerando as fases do tratamento da depressão, a conduta mais adequada neste momento é:",
+  opcoes:[
+    {texto:"Suspender o antidepressivo imediatamente, pois a resposta parcial indica falha terapêutica", correta:false, exp:"Interromper precocemente pode levar a recaída; a fase aguda do tratamento dura tipicamente de 2 a 6 meses, e melhora parcial nesse período não indica falha terapêutica."},
+    {texto:"Manter o tratamento, pois a paciente ainda está na fase aguda/de consolidação da resposta, reavaliando a evolução", correta:true, exp:"A fase aguda do tratamento (2 a 6 meses) busca reduzir os sintomas; melhora parcial com poucos meses de uso é esperada e justifica manutenção com reavaliação periódica."},
+    {texto:"Trocar imediatamente para um antidepressivo tricíclico, já na primeira reavaliação", correta:false, exp:"Tricíclicos são alternativa reservada para quando ISRS/ISRSN não funcionam após tempo adequado de uso, dado seu maior perfil de efeitos adversos, e não a primeira opção diante de melhora parcial."},
+    {texto:"Encaminhar compulsoriamente para internação psiquiátrica, dada a persistência de sintomas", correta:false, exp:"Não há critério de gravidade ou de risco descrito no caso que justifique internação; o quadro de melhora parcial é compatível com seguimento ambulatorial na atenção primária."}
+  ],
+  raciocinio:"Reconhecer as fases do tratamento da depressão (aguda, manutenção, continuação) evita decisões precipitadas de suspensão ou troca do antidepressivo diante de melhora apenas parcial nos primeiros meses."
+},
+{
+  tema:"Saúde Mental - Depressão",
+  caso:"Durante consulta de retorno, Ricardo, 34 anos, acompanhado há dois meses por quadro depressivo moderado, chega visivelmente mais contido do que de costume e, ao ser questionado ativamente pelo médico sobre pensamentos de morte, relata que nas últimas duas semanas passou a pensar recorrentemente em suicídio, já elaborou um plano específico envolvendo medicamentos guardados em casa e confirma ter acesso fácil a essas substâncias no momento.",
+  pergunta:"A conduta imediata mais adequada é:",
+  opcoes:[
+    {texto:"Agendar retorno em 30 dias para reavaliação do quadro, mantendo a mesma medicação", correta:false, exp:"Diante de ideação com plano estruturado e acesso a meios, adiar a reavaliação por 30 dias expõe o paciente a risco iminente que exige ação imediata, não seguimento de rotina."},
+    {texto:"Encaminhar com urgência para avaliação em serviço de urgência/emergência, dado o alto risco de suicídio", correta:true, exp:"A presença de ideação, plano estruturado e acesso a meios caracteriza alto risco de suicídio, exigindo encaminhamento urgente para avaliação em serviço de urgência."},
+    {texto:"Aumentar a dose do antidepressivo e orientar retorno em 15 dias, sem outras medidas", correta:false, exp:"Apenas ajustar a dose e aguardar 15 dias não responde à urgência do risco descrito; o quadro exige avaliação presencial imediata e ambiente seguro, não apenas ajuste farmacológico."},
+    {texto:"Orientar apenas técnicas de respiração e observação domiciliar pela família, sem qualquer encaminhamento", correta:false, exp:"Diante de risco iminente com plano e meios disponíveis, orientações domiciliares isoladas são insuficientes; é necessária avaliação urgente em ambiente adequado."}
+  ],
+  raciocinio:"A presença de ideação suicida, plano estruturado e acesso a meios caracteriza alto risco de suicídio, exigindo encaminhamento urgente, conforme os critérios de gravidade que orientam o referenciamento em saúde mental."
+},
+{
+  tema:"Saúde Mental - Depressão",
+  caso:"Em consulta de rotina, o médico de família aplica o instrumento de rastreio e avaliação de gravidade de sintomas depressivos em Juliana, 41 anos, cozinheira, que já vinha em acompanhamento havia três semanas por queixas de tristeza persistente e insônia. Ao somar as respostas do questionário estruturado, o escore final obtido é de 17 pontos.",
+  pergunta:"Ao utilizar o PHQ-9 e obter uma pontuação de 17 pontos, o resultado sugere:",
+  opcoes:[
+    {texto:"Ausência de sintomas depressivos significativos", correta:false, exp:"Pontuações abaixo de 4 pontos é que sugerem interromper a investigação por ausência de sintomas relevantes; 17 pontos está muito acima desse patamar."},
+    {texto:"Sintomas subsindrômicos, sem necessidade de investigação adicional", correta:false, exp:"Sintomas subsindrômicos correspondem à faixa de 5 a 8 pontos no PHQ-9; 17 pontos ultrapassa amplamente essa faixa, indicando quadro mais grave."},
+    {texto:"Episódio depressivo moderado a grave, indicando necessidade de conduta terapêutica ativa", correta:true, exp:"Pontuações do PHQ-9 acima de 15 pontos sugerem episódio depressivo moderado/grave, indicando necessidade de tratamento ativo e acompanhamento próximo."},
+    {texto:"Episódio depressivo leve, que deve ser apenas observado sem intervenção", correta:false, exp:"Episódio depressivo leve corresponde à faixa de 9 a 14 pontos no PHQ-9; 17 pontos está acima dessa faixa, sugerindo quadro moderado a grave, e mesmo o quadro leve não deveria ser apenas observado sem qualquer conduta."}
+  ],
+  raciocinio:"O PHQ-9 é um instrumento desenhado para a atenção primária que sugere diferentes níveis de gravidade conforme a pontuação obtida; pontuações acima de 15 indicam episódio depressivo moderado a grave, exigindo conduta terapêutica ativa."
+},
+{
+  tema:"Saúde Mental - Depressão",
+  caso:"Fábio, 26 anos, técnico em informática, está em tratamento para episódio depressivo há três semanas com fluoxetina, iniciada após avaliação inicial na UBS. Na consulta de retorno, a esposa relata, preocupada, que ele passou a dormir muito pouco nas últimas noites, aparentemente sem cansaço, fala de forma acelerada sobre planos grandiosos para abrir uma empresa e, ao ser questionado, o próprio Fábio conta que já teve, em outras ocasiões da vida, períodos parecidos de euforia intensa e pouca necessidade de sono, que duraram algumas semanas.",
+  pergunta:"Esses achados levantam suspeita de qual condição, que deve ser investigada antes de simplesmente ajustar a dose do antidepressivo?",
+  opcoes:[
+    {texto:"Transtorno de ansiedade generalizada isolado", correta:false, exp:"O relato de períodos de humor muito elevado e menor necessidade de sono não é característico da ansiedade generalizada, que se apresenta como preocupação excessiva contínua, sem esses episódios de humor elevado."},
+    {texto:"Transtorno do humor bipolar, o que pode exigir abordagem diferenciada e encaminhamento", correta:true, exp:"A avaliação da depressão deve sempre buscar história de mania/hipomania; resposta anormal a antidepressivos e histórico de humor elevado sugerem transtorno bipolar, mudando a conduta terapêutica."},
+    {texto:"Transtorno obsessivo-compulsivo", correta:false, exp:"Não há relato de rituais ou pensamentos obsessivos no caso; os achados descritos (humor elevado, menor necessidade de sono, resposta atípica ao antidepressivo) apontam para investigação de mania/hipomania, não para TOC."},
+    {texto:"Efeito esperado e normal de qualquer antidepressivo, sem necessidade de investigação", correta:false, exp:"Resposta anormal ao antidepressivo associada a história sugestiva de mania/hipomania é sinal de alerta que deve ser investigado, e não considerado efeito trivial e esperado do tratamento."}
+  ],
+  raciocinio:"Na avaliação clínica da depressão, é fundamental buscar história de mania/hipomania, pois resposta anormal a antidepressivos e histórico de humor elevado sugerem transtorno bipolar, o que muda significativamente a conduta terapêutica e pode indicar necessidade de encaminhamento."
+},
+{
+  tema:"Saúde Mental - Depressão",
+  caso:"Seu Antônio, 78 anos, viúvo há três meses após o falecimento da esposa com quem viveu por 52 anos, é levado à UBS pela filha, que mora na mesma rua e passou a notá-lo mais isolado, com queixas de tristeza, desânimo e esquecimentos leves no dia a dia, como esquecer de tomar a medicação para hipertensão em alguns dias.",
+  pergunta:"Na avaliação desse paciente, além do rastreio para depressão, a equipe deve:",
+  opcoes:[
+    {texto:"Assumir que se trata apenas de luto normal, dispensando qualquer investigação adicional", correta:false, exp:"A presença de queixas cognitivas associadas a sintomas depressivos em idoso não deve ser descartada sem avaliação; é necessário investigar possível comorbidade, e não presumir automaticamente luto normal sem avaliação."},
+    {texto:"Considerar o uso de escala de rastreio cognitivo, dado o risco de comorbidade entre sintomas depressivos e declínio cognitivo em idosos", correta:true, exp:"Na avaliação de depressão em idosos, deve-se considerar rastreio cognitivo (como a escala de 10 pontos), pois sintomas depressivos podem coexistir ou mascarar quadros demenciais."},
+    {texto:"Iniciar antipsicótico de imediato, independentemente da gravidade dos sintomas", correta:false, exp:"Antipsicóticos são reservados a situações específicas, como sintomas psicóticos associados ou casos refratários; não há indicação para uso imediato e indiscriminado nesse cenário inicial."},
+    {texto:"Encaminhar compulsoriamente para internação psiquiátrica pela idade avançada", correta:false, exp:"A idade avançada, isoladamente, não é critério de internação; o quadro descrito é compatível com avaliação e manejo inicial na atenção primária, com atenção à possível comorbidade cognitiva."}
+  ],
+  raciocinio:"Na avaliação de depressão em idosos, deve-se considerar o uso de escala de rastreio cognitivo, pois sintomas depressivos podem coexistir ou mascarar declínio cognitivo, o que orienta a conduta e o acompanhamento adequados."
+},
+{
+  tema:"Estrutura da Equipe (ESF)",
+  caso:"O secretário municipal de saúde de um município de médio porte está planejando a implantação de quatro novas equipes de Estratégia Saúde da Família em bairros que ainda não possuem cobertura de atenção básica, entre eles um bairro predominantemente residencial de classe média e outro de ocupação recente, com alta densidade populacional e forte presença de famílias em situação de vulnerabilidade social.",
+  pergunta:"De acordo com os princípios de organização da atenção básica, a composição e a carga horária das equipes devem ser definidas principalmente considerando:",
+  opcoes:[
+    {texto:"Um número fixo e universal de profissionais, idêntico para qualquer território, independentemente das características locais", correta:false, exp:"Um modelo rígido e uniforme ignora as diferenças de necessidade entre territórios, contrariando o princípio de que a organização deve considerar a realidade local."},
+    {texto:"As atribuições dos profissionais, a cobertura populacional e as necessidades específicas do território", correta:true, exp:"A organização do processo de trabalho das equipes deve considerar atribuições dos profissionais, cobertura e necessidades locais, evitando modelos rígidos que ignorem a realidade do território."},
+    {texto:"Exclusivamente a disponibilidade orçamentária do município, sem considerar o perfil da população", correta:false, exp:"Embora o financiamento seja relevante para a viabilidade, a organização da equipe deve partir das necessidades da população e do território, e não apenas de critérios orçamentários isolados."},
+    {texto:"A preferência pessoal dos profissionais quanto à carga horária de trabalho", correta:false, exp:"A carga horária das equipes deve ser compatível com as atribuições e a cobertura necessária ao território, e não definida apenas pela preferência individual dos profissionais."}
+  ],
+  raciocinio:"A organização do processo de trabalho das equipes de saúde da família deve considerar atribuições dos profissionais, cobertura populacional e necessidades específicas do território, evitando modelos rígidos e uniformes que ignorem a realidade local."
+},
+{
+  tema:"Estrutura da Equipe (ESF)",
+  caso:"A equipe de Saúde da Família da UBS Boa Vista, composta por um médico, uma enfermeira, dois técnicos de enfermagem e quatro agentes comunitários, é responsável por um território com mais de 5 mil pessoas cadastradas. Nos últimos meses, os profissionais relatam cansaço acumulado, dificuldade de concluir as visitas domiciliares programadas e agenda de consultas lotada com semanas de antecedência.",
+  pergunta:"Esse cenário reflete um desafio amplamente reconhecido na prática da Medicina de Família e Comunidade, que é:",
+  opcoes:[
+    {texto:"A ausência completa de qualquer problema estrutural, sendo a sobrecarga apenas percepção subjetiva dos profissionais", correta:false, exp:"A sobrecarga de trabalho por grande volume de pacientes é um desafio real e reconhecido da prática em MFC, e não apenas percepção subjetiva sem base estrutural."},
+    {texto:"A sobrecarga de trabalho decorrente de grande carga de pacientes, um desafio conhecido da profissão", correta:true, exp:"A sobrecarga de trabalho é um desafio amplamente reconhecido da MFC, relacionado ao grande volume de pacientes atendidos pelas equipes, exigindo atenção da gestão para o dimensionamento adequado."},
+    {texto:"Um problema exclusivo de equipes urbanas, que nunca ocorre em áreas rurais", correta:false, exp:"A sobrecarga de trabalho e os recursos limitados são desafios que também afetam áreas rurais, não sendo exclusivos do contexto urbano."},
+    {texto:"Uma situação que deve ser resolvida apenas reduzindo o número de famílias cadastradas, sem qualquer outra medida de gestão", correta:false, exp:"A resposta a essa sobrecarga envolve múltiplas estratégias de gestão e dimensionamento adequado da equipe, e não apenas a redução do número de famílias cadastradas como única medida."}
+  ],
+  raciocinio:"A sobrecarga de trabalho, relacionada ao grande volume de pacientes atendidos, é um desafio reconhecido da prática em Medicina de Família e Comunidade, exigindo atenção da gestão para o dimensionamento adequado das equipes."
+},
+{
+  tema:"Estrutura da Equipe (ESF)",
+  caso:"Durante uma reunião de equipe, o médico de família comenta que, desde que concluiu a residência há três anos, já precisou revisar diversas vezes os protocolos de manejo de hipertensão, diabetes e saúde mental que utiliza no dia a dia, à medida que novas diretrizes e evidências foram publicadas.",
+  pergunta:"Esse desafio da prática em MFC é mais bem descrito como:",
+  opcoes:[
+    {texto:"Desnecessário, pois protocolos de atenção básica nunca sofrem atualização", correta:false, exp:"A medicina, incluindo a atenção básica, está em constante evolução, com atualização frequente de diretrizes, o que torna essa alternativa incompatível com a realidade da prática."},
+    {texto:"A necessidade de atualização constante, já que a medicina está em evolução contínua e o médico de família deve acompanhar novas diretrizes", correta:true, exp:"A prática da MFC exige atualização constante, pois a medicina está em contínua evolução, sendo esse um dos desafios reconhecidos da profissão."},
+    {texto:"Um problema exclusivo de especialistas focais, sem qualquer relação com a prática generalista", correta:false, exp:"A necessidade de atualização constante afeta também — e especialmente — o médico de família, dada a amplitude de condições que deve acompanhar ao longo da vida do paciente."},
+    {texto:"Resolvido definitivamente após a conclusão da residência médica, sem necessidade de educação continuada", correta:false, exp:"A formação inicial não elimina a necessidade de educação continuada; a atualização constante é um desafio permanente ao longo de toda a carreira do médico de família."}
+  ],
+  raciocinio:"A prática da MFC exige atualização constante, pois a medicina está em contínua evolução, sendo esse um dos desafios reconhecidos da profissão que impacta diretamente a qualidade do cuidado prestado."
+},
+{
+  tema:"População em Situação de Rua",
+  caso:"Pedro, 52 anos, vive em situação de rua há aproximadamente oito anos na região central da cidade, sobrevivendo de trabalhos informais esporádicos. Ele procura espontaneamente a UBS de referência do território, relatando tosse persistente há mais de três semanas, associada a sudorese noturna e emagrecimento perceptível, segundo ele mesmo, de cerca de 6 kg nos últimos dois meses. Chega à recepção sem documento de identificação e sem comprovante de residência.",
+  pergunta:"Diante desse quadro, a conduta prioritária da equipe de APS deve incluir:",
+  opcoes:[
+    {texto:"Recusar o atendimento por ausência de endereço fixo e documentação atualizada", correta:false, exp:"A ausência de endereço fixo ou documentação não pode ser barreira para o acolhimento e atendimento na atenção básica, que deve garantir acesso universal, inclusive a populações em situação de rua."},
+    {texto:"Realizar acolhimento e investigar ativamente doenças negligenciadas, como tuberculose, dado o quadro clínico sugestivo", correta:true, exp:"Tosse persistente por mais de três semanas associada a emagrecimento em população vulnerável é sinal de alerta para tuberculose, doença negligenciada com maior prevalência em populações em situação de rua; a equipe deve acolher e investigar."},
+    {texto:"Orientar que o paciente procure exclusivamente um hospital de referência em outra cidade", correta:false, exp:"Encaminhar o paciente para fora do território sem qualquer avaliação inicial na própria unidade nega o papel de primeiro contato e acolhimento da atenção básica."},
+    {texto:"Aguardar retorno espontâneo em consulta agendada daqui a dois meses, sem investigação imediata", correta:false, exp:"Diante de sintomas sugestivos de doença negligenciada com potencial gravidade, adiar a investigação por dois meses expõe o paciente e a comunidade a riscos evitáveis."}
+  ],
+  raciocinio:"Tosse persistente associada a emagrecimento em população vulnerável é sinal de alerta para doenças negligenciadas, como a tuberculose; a atenção básica deve acolher sem barreiras administrativas e investigar ativamente esse tipo de apresentação clínica."
+},
+{
+  tema:"População em Situação de Rua",
+  caso:"Durante uma abordagem de rotina em via pública, a equipe do Consultório na Rua encontra Marcos, 39 anos, que vive embaixo de um viaduto há cerca de dois anos. Ao realizar exame físico simplificado, a enfermeira identifica, no antebraço direito, uma lesão de pele esbranquiçada, de bordas bem definidas, na qual Marcos relata não sentir nada quando tocada com um cotonete, mesmo diante da observação direta da equipe.",
+  pergunta:"Esse achado levanta suspeita de qual doença negligenciada, que deve ser priorizada na avaliação?",
+  opcoes:[
+    {texto:"Hanseníase", correta:true, exp:"Lesões hipocrômicas com alteração de sensibilidade são achado clássico sugestivo de hanseníase, doença negligenciada com maior prevalência em populações vulneráveis, incluindo pessoas em situação de rua."},
+    {texto:"Hipertensão arterial sistêmica", correta:false, exp:"A hipertensão não se manifesta com lesões cutâneas hipocrômicas e alteração de sensibilidade; esse achado semiológico não se relaciona a essa condição."},
+    {texto:"Diabetes mellitus tipo 2", correta:false, exp:"O diabetes pode causar alterações de sensibilidade em estágios avançados (neuropatia), mas não se relaciona a lesões cutâneas hipocrômicas como achado característico."},
+    {texto:"Transtorno de ansiedade generalizada", correta:false, exp:"Transtornos de ansiedade não se manifestam com achados dermatológicos como lesões hipocrômicas e alteração de sensibilidade."}
+  ],
+  raciocinio:"O reconhecimento de sinais clínicos característicos de doenças negligenciadas, como a hanseníase (lesões hipocrômicas com alteração de sensibilidade), é essencial no cuidado de populações vulneráveis, incluindo pessoas em situação de rua."
+},
+{
+  tema:"População em Situação de Rua",
+  caso:"O gestor municipal de saúde discute com a equipe técnica a criação de um serviço voltado especificamente para atender a população em situação de rua da região central, que hoje soma cerca de 200 pessoas segundo o último censo populacional, muitas das quais não buscam espontaneamente as UBS de referência por medo de discriminação ou por não possuírem documentação.",
+  pergunta:"Essa estratégia, prevista na organização da rede de atenção à saúde, corresponde a:",
+  opcoes:[
+    {texto:"Pronto-socorro móvel exclusivo para emergências clínicas", correta:false, exp:"O serviço descrito não se limita a emergências clínicas; trata-se de uma modalidade da atenção primária voltada à ampliação do acesso dessa população específica."},
+    {texto:"Consultório na Rua, integrado à Atenção Primária à Saúde", correta:true, exp:"O Consultório na Rua é uma modalidade da Atenção Primária à Saúde destinada a ampliar o acesso de populações em situação de rua ao cuidado, sendo um dos pontos de atenção primária na rede de saúde."},
+    {texto:"Centro de Atenção Psicossocial (CAPS) especializado apenas em dependência química", correta:false, exp:"O CAPS é um ponto especializado de saúde mental, distinto do Consultório na Rua, que é um dispositivo da própria atenção primária voltado a essa população."},
+    {texto:"Ambulatório de especialidades vinculado exclusivamente ao nível hospitalar", correta:false, exp:"O dispositivo descrito está vinculado à atenção primária, e não a um ambulatório de especialidades de nível hospitalar."}
+  ],
+  raciocinio:"O Consultório na Rua é uma modalidade da Atenção Primária à Saúde destinada a ampliar o acesso de populações em situação de rua ao cuidado, sendo citado como um dos pontos de atenção primária dentro da rede de atenção à saúde."
+},
+{
+  tema:"Ética e Saúde do Adolescente",
+  caso:"Larissa, 15 anos, estudante do ensino médio, comparece sozinha à UBS após faltar à escola durante o período da manhã, sem o conhecimento dos pais. Ela relata ao médico de família que iniciou relacionamento afetivo há dois meses e deseja iniciar o uso de método contraceptivo, pedindo explicitamente que a informação não seja compartilhada com os pais, pois teme reação de punição por parte deles.",
+  pergunta:"A conduta do médico de família, considerando a autonomia progressiva do adolescente, deve ser:",
+  opcoes:[
+    {texto:"Recusar o atendimento e exigir a presença obrigatória de um responsável legal para qualquer orientação", correta:false, exp:"Exigir presença obrigatória de responsável para orientação sobre sexualidade contraria o reconhecimento da autonomia progressiva do adolescente e pode afastá-lo do cuidado."},
+    {texto:"Acolher a adolescente, orientar sobre métodos contraceptivos e manter a confidencialidade, respeitando sua autonomia, salvo risco relevante", correta:true, exp:"O ECA e o CFM reconhecem a capacidade decisória crescente do adolescente; questões de sexualidade e saúde reprodutiva são consideradas confidenciais, e o sigilo só deve ser quebrado diante de risco relevante."},
+    {texto:"Informar imediatamente os pais da adolescente, independentemente do desejo dela, por se tratar de menor de idade", correta:false, exp:"A menoridade, isoladamente, não justifica a quebra automática do sigilo sobre temas de saúde sexual e reprodutiva, que são considerados confidenciais na consulta com adolescentes."},
+    {texto:"Negar qualquer orientação sobre contracepção até que a adolescente complete 18 anos", correta:false, exp:"Negar orientação e acesso ao planejamento familiar contraria o direito da adolescente à saúde sexual e reprodutiva, reconhecido mesmo antes da maioridade civil."}
+  ],
+  raciocinio:"O ECA e o CFM reconhecem a capacidade decisória crescente do adolescente; sexualidade e saúde reprodutiva são temas confidenciais na consulta, e o sigilo só deve ser quebrado diante de risco relevante à vida ou à saúde, sempre comunicando o adolescente sobre essa necessidade."
+},
+{
+  tema:"Ética e Saúde do Adolescente",
+  caso:"Gabriel, 16 anos, comparece à consulta de rotina acompanhado da mãe, mas, durante o momento reservado para conversa a sós, relata ao médico que iniciou vida sexual há alguns meses com a namorada, também adolescente, e pede que essa informação permaneça apenas entre eles dois, já que teme o julgamento da família, embora negue qualquer situação de risco imediato, como uso de substâncias ou violência.",
+  pergunta:"Nessa situação, o sigilo profissional:",
+  opcoes:[
+    {texto:"Deve ser mantido, pois sexualidade é tema confidencial na consulta com adolescentes, na ausência de risco relevante", correta:true, exp:"Sexualidade, uso de substâncias e saúde mental são exemplos de temas confidenciais na consulta com adolescentes; a quebra de sigilo é reservada a situações de risco de vida ou violência grave."},
+    {texto:"Deve ser quebrado obrigatoriamente, pois qualquer atividade sexual de menor de idade deve ser informada aos pais", correta:false, exp:"Não há obrigatoriedade automática de informar os pais sobre a vida sexual do adolescente na ausência de risco relevante; esse tema é considerado confidencial na consulta."},
+    {texto:"Só pode ser mantido se o adolescente tiver mais de 18 anos", correta:false, exp:"A confidencialidade sobre temas sensíveis já se aplica durante a adolescência, reconhecendo a autonomia progressiva, e não apenas após os 18 anos."},
+    {texto:"Deve ser quebrado apenas se os pais solicitarem formalmente a informação", correta:false, exp:"A solicitação dos pais, isoladamente, não é critério para quebra de sigilo; o que justifica a exceção é a presença de risco relevante à vida ou à integridade do adolescente."}
+  ],
+  raciocinio:"Sexualidade, uso de substâncias e saúde mental são exemplos de temas confidenciais na consulta com adolescentes; a quebra de sigilo é reservada a situações de risco de vida ou violência grave, e não à simples solicitação de terceiros."
+},
+{
+  tema:"Ética e Saúde do Adolescente",
+  caso:"Beatriz, 14 anos, é atendida a sós, conforme rotina da equipe para consultas com adolescentes, e, após alguns minutos de silêncio, revela ao médico que vem sofrendo abuso sexual por parte de um tio que mora na mesma casa, há aproximadamente três meses, pedindo insistentemente que ninguém saiba do que contou, por medo de represálias.",
+  pergunta:"Nessa situação, a conduta correta quanto à confidencialidade é:",
+  opcoes:[
+    {texto:"Manter sigilo absoluto, respeitando integralmente o desejo da adolescente de não revelar a ninguém", correta:false, exp:"Risco de violência grave é justamente uma das situações em que o sigilo deve ser excepcionado, pois a proteção da adolescente prevalece sobre a confidencialidade absoluta."},
+    {texto:"Quebrar o sigilo e notificar/articular a rede de proteção, pois há risco relevante que justifica a exceção à confidencialidade, comunicando a adolescente sobre a necessidade", correta:true, exp:"Risco de vida ou violência grave justifica a quebra do sigilo profissional mesmo em consultas confidenciais com adolescentes, sempre comunicando o motivo à própria adolescente; a notificação de violência é, além disso, compulsória."},
+    {texto:"Aguardar que a própria adolescente resolva a situação sem qualquer intervenção da equipe", correta:false, exp:"Diante de relato de violência sexual, a inação da equipe expõe a adolescente a risco contínuo e contraria a obrigação legal de notificação e proteção."},
+    {texto:"Encaminhar apenas para atendimento psicológico particular, sem qualquer notificação", correta:false, exp:"A notificação de suspeita ou confirmação de violência contra criança/adolescente é obrigação legal do profissional de saúde, não podendo ser substituída apenas por encaminhamento psicológico particular."}
+  ],
+  raciocinio:"Risco de vida ou violência grave justifica a quebra do sigilo profissional mesmo em consultas confidenciais com adolescentes, sempre comunicando o motivo ao próprio adolescente; a notificação de violência contra criança e adolescente é, além disso, obrigação legal do profissional de saúde."
+},
+{
+  tema:"Ética e Saúde do Adolescente",
+  caso:"Enzo, 13 anos, é levado à consulta de rotina pela mãe, que permanece na sala durante todo o atendimento inicial. Em determinado momento, o adolescente, visivelmente incomodado, pede discretamente ao médico um momento a sós para conversar sobre \"uma coisa pessoal\", sem especificar do que se trata.",
+  pergunta:"A conduta mais alinhada aos princípios do cuidado ao adolescente na APS é:",
+  opcoes:[
+    {texto:"Negar o pedido, pois todo atendimento de menores de idade deve ocorrer necessariamente na presença dos responsáveis", correta:false, exp:"Negar espaço de escuta a sós contraria a recomendação de reservar parte da consulta para o adolescente, especialmente para temas sensíveis, respeitando sua autonomia progressiva."},
+    {texto:"Reservar parte da consulta para escuta a sós, com abordagem centrada na pessoa e sem julgamento", correta:true, exp:"Parte da consulta com o adolescente deve ser realizada sem a presença dos pais, especialmente para temas sensíveis, fortalecendo o vínculo e respeitando a autonomia progressiva."},
+    {texto:"Redirecionar o adolescente para que converse apenas com a mãe sobre o assunto", correta:false, exp:"Redirecionar o adolescente para a mãe sem oferecer espaço de escuta médica contraria o papel da equipe de acolher diretamente o adolescente em temas sensíveis."},
+    {texto:"Informar à mãe, antes de ouvir o adolescente, que ele deseja tratar de assuntos de sexualidade", correta:false, exp:"Revelar previamente à mãe o teor do pedido de conversa a sós compromete a confidencialidade e o vínculo de confiança, mesmo antes de qualquer conteúdo ter sido discutido."}
+  ],
+  raciocinio:"Parte da consulta com o adolescente deve ser realizada sem a presença dos pais, especialmente para temas sensíveis como sexualidade, fortalecendo o vínculo e respeitando a autonomia progressiva reconhecida pelo ECA e pelo CFM."
+},
+{
+  tema:"Resolutividade da APS",
+  caso:"Em uma reunião do Conselho Municipal de Saúde, discute-se a proposta orçamentária para o próximo ano, que prevê aumento significativo de recursos destinados à ampliação do número de equipes de Saúde da Família, em detrimento da construção de um novo hospital de média complexidade solicitado por alguns vereadores.",
+  pergunta:"Esse investimento se justifica porque a atenção primária, na organização em pirâmide dos níveis de atenção, deve ser capaz de resolver:",
+  opcoes:[
+    {texto:"Cerca de 20% das demandas de saúde da população, encaminhando o restante para outros níveis", correta:false, exp:"Um percentual tão baixo de resolutividade não corresponde ao papel estruturante atribuído à atenção primária como base da pirâmide assistencial."},
+    {texto:"Cerca de 80% das demandas de saúde da população, atuando como base do sistema", correta:true, exp:"A atenção primária é considerada a base da pirâmide assistencial justamente por sua capacidade de resolver cerca de 80% das demandas de saúde da população, o que justifica o investimento prioritário nesse nível."},
+    {texto:"Exclusivamente casos de baixíssima complexidade, sem impacto relevante na resolutividade geral do sistema", correta:false, exp:"A atenção primária tem impacto relevante e amplo na resolutividade geral do sistema, não se limitando a casos triviais e sem repercussão no conjunto da rede."},
+    {texto:"Nenhuma demanda de forma resolutiva, servindo apenas para triagem", correta:false, exp:"A atenção primária não se limita a triagem; ela resolve a maior parte das necessidades de saúde da população, coordenando o cuidado quando o encaminhamento é necessário."}
+  ],
+  raciocinio:"A atenção primária é considerada a base da pirâmide assistencial justamente por sua capacidade de resolver cerca de 80% das demandas de saúde da população, o que justifica o investimento prioritário nesse nível do sistema."
+},
+{
+  tema:"Resolutividade da APS",
+  caso:"Durante uma audiência pública sobre o orçamento da saúde municipal, um vereador argumenta que seria mais eficiente concentrar os recursos disponíveis na construção de um hospital de alta complexidade, alegando que \"é lá que estão os casos graves que realmente importam\", e propõe reduzir o investimento destinado à expansão das equipes de Saúde da Família.",
+  pergunta:"Com base no conceito de resolutividade da APS, a resposta mais adequada a esse argumento é:",
+  opcoes:[
+    {texto:"Concordar integralmente, pois a atenção primária tem baixo impacto na resolução dos problemas de saúde", correta:false, exp:"Essa afirmação contraria o conceito de que a atenção primária resolve a maior parte das demandas de saúde da população, sendo, portanto, incorreta."},
+    {texto:"Argumentar que a atenção primária, por resolver a maior parte das demandas de saúde da população, deve ser a base estruturante do sistema, sendo o investimento nela custo-efetivo", correta:true, exp:"Sistemas de saúde com forte base na atenção primária são mais efetivos, equitativos e de menor custo, o que justifica considerá-la a base estruturante da pirâmide assistencial e alvo prioritário de investimento."},
+    {texto:"Argumentar que apenas hospitais deveriam existir, eliminando a necessidade de unidades básicas", correta:false, exp:"Eliminar a atenção primária contraria diretamente o conceito de resolutividade da base da pirâmide e sobrecarregaria desnecessariamente o nível hospitalar com demandas que poderiam ser resolvidas na APS."},
+    {texto:"Concordar parcialmente, defendendo que a atenção primária deveria ser extinta em áreas urbanas", correta:false, exp:"Não há justificativa para restringir a atenção primária a áreas rurais; o conceito de resolutividade se aplica a toda a população, independentemente do contexto urbano ou rural."}
+  ],
+  raciocinio:"Sistemas de saúde com forte base na atenção primária são mais efetivos, equitativos e de menor custo, o que justifica considerá-la a base estruturante do sistema e prioridade de investimento, mesmo diante de argumentos que valorizam apenas a alta complexidade."
+},
+{
+  tema:"Resolutividade da APS",
+  caso:"Em uma aula de saúde coletiva, um estudante de medicina questiona o professor sobre por que os diagramas de organização dos sistemas de saúde costumam representar a atenção primária na base de uma pirâmide, e não no topo, já que, na opinião dele, os hospitais de alta complexidade parecem ser mais importantes por lidarem com os casos mais graves.",
+  pergunta:"A justificativa mais correta para essa representação é:",
+  opcoes:[
+    {texto:"Porque a atenção primária é hierarquicamente menos importante que os demais níveis", correta:false, exp:"A posição na base não indica menor importância; ao contrário, reflete a função estruturante da atenção primária, responsável pela maior parte da resolutividade do sistema."},
+    {texto:"Porque a atenção primária sustenta o sistema ao concentrar o maior volume e resolver a maior parte das necessidades de saúde da população", correta:true, exp:"A posição da APS na base da pirâmide reflete sua função estruturante: maior volume de atendimento e maior capacidade de resolução das demandas de saúde da população."},
+    {texto:"Porque a atenção primária deve atender apenas quem não consegue pagar por planos de saúde privados", correta:false, exp:"A atenção primária, no SUS, é organizada pelo princípio da universalidade, atendendo toda a população, e não apenas quem não tem acesso a planos privados."},
+    {texto:"Porque a base da pirâmide representa o nível de menor investimento necessário", correta:false, exp:"Pelo contrário, a base da pirâmide, por concentrar a maior resolutividade, deve receber investimento prioritário, e não o menor investimento do sistema."}
+  ],
+  raciocinio:"A posição da APS na base da pirâmide assistencial reflete sua função estruturante: maior volume de atendimento e maior capacidade de resolução das demandas de saúde da população, o que justifica o investimento prioritário nesse nível."
+},
+{
+  tema:"Territorialização e DCNT",
+  caso:"Ao revisar os registros de atendimento dos últimos dois anos da UBS Jardim Primavera, a equipe percebe aumento expressivo no número de pacientes com hipertensão e diabetes mal controlados, muitos dos quais faltam frequentemente às consultas de acompanhamento e não retiram a medicação na farmácia da unidade regularmente.",
+  pergunta:"A estratégia mais alinhada aos princípios da territorialização e da abordagem comunitária para lidar com esse achado é:",
+  opcoes:[
+    {texto:"Aguardar que os próprios pacientes procurem a unidade espontaneamente para tratamento individual, sem qualquer ação adicional", correta:false, exp:"Uma postura apenas reativa à demanda espontânea não responde ao padrão epidemiológico identificado no diagnóstico do território, que exige ação proativa da equipe."},
+    {texto:"Organizar ações em grupo, busca ativa e estratégias direcionadas às necessidades identificadas no território", correta:true, exp:"A territorialização e a abordagem comunitária orientam a equipe a responder a padrões epidemiológicos identificados no território com ações coletivas, como grupos educativos e busca ativa, além do cuidado individual."},
+    {texto:"Encaminhar automaticamente todos os hipertensos e diabéticos para acompanhamento exclusivo em nível hospitalar", correta:false, exp:"Hipertensão e diabetes são condições cujo acompanhamento longitudinal é atribuição central da atenção primária; encaminhar todos os casos ao nível hospitalar contraria essa responsabilidade."},
+    {texto:"Reduzir a frequência de atendimentos a essas condições, priorizando exclusivamente demandas agudas", correta:false, exp:"Reduzir o acompanhamento de condições crônicas justamente quando se identifica piora do controle no território vai na direção oposta à resposta esperada da equipe."}
+  ],
+  raciocinio:"A territorialização e a abordagem comunitária orientam a equipe a responder a padrões epidemiológicos identificados no território (como aumento de DCNTs) com ações coletivas, busca ativa e estratégias direcionadas às necessidades locais."
+},
+{
+  tema:"Territorialização e DCNT",
+  caso:"Durante o diagnóstico situacional anual do território, a equipe de Saúde da Família identifica que grande parte da população idosa cadastrada, sobretudo aquela que mora sozinha e tem mobilidade reduzida, não comparece às consultas de acompanhamento de hipertensão e diabetes há mais de um ano, apesar de estar cadastrada e ter, em tese, direito ao acompanhamento programado.",
+  pergunta:"A conduta mais adequada, do ponto de vista da territorialização, é:",
+  opcoes:[
+    {texto:"Considerar que idosos sem queixas não precisam de acompanhamento programado", correta:false, exp:"O acompanhamento de condições crônicas deve ser programado e proativo, independentemente da ausência de queixas agudas no momento, especialmente após diagnóstico territorial apontando lacuna de cuidado."},
+    {texto:"Realizar busca ativa dessa população e organizar estratégias de cuidado programado voltadas às necessidades identificadas", correta:true, exp:"A territorialização exige diagnóstico ativo das necessidades da população coberta e resposta programada, não apenas reativa à demanda espontânea."},
+    {texto:"Aguardar que os idosos busquem espontaneamente a unidade quando apresentarem sintomas agudos", correta:false, exp:"Uma postura passiva, aguardando sintomas agudos, contraria o princípio de acompanhamento programado e longitudinal das condições crônicas na atenção primária."},
+    {texto:"Transferir a responsabilidade pelo acompanhamento dessas condições exclusivamente para a família, sem envolvimento da equipe", correta:false, exp:"A responsabilidade sanitária pela população do território é da equipe de saúde, que deve organizar estratégias de cuidado, e não transferir integralmente essa função à família."}
+  ],
+  raciocinio:"A territorialização exige diagnóstico ativo das necessidades da população coberta e resposta programada, e não apenas reativa à demanda espontânea, especialmente diante de lacunas identificadas no acompanhamento de condições crônicas."
+},
+{
+  tema:"Territorialização e DCNT",
+  caso:"Ao cruzar dados do sistema de informação da atenção básica com as fichas de puericultura, a equipe de Saúde da Família do bairro Vila Nova constata que 30% das crianças de 2 a 5 anos cadastradas apresentam sobrepeso ou obesidade, percentual bem acima da média observada em territórios vizinhos com perfil socioeconômico semelhante.",
+  pergunta:"Essa iniciativa representa a aplicação de qual princípio da atuação em território?",
+  opcoes:[
+    {texto:"Hierarquização do sistema de saúde", correta:false, exp:"Hierarquização se relaciona à organização dos serviços em níveis crescentes de complexidade e aos fluxos de referência entre eles, não à resposta a um achado epidemiológico local específico."},
+    {texto:"Territorialização, com resposta a necessidades específicas identificadas na população coberta", correta:true, exp:"A ação exemplifica a territorialização, pois nasce do diagnóstico das necessidades específicas de um território e se traduz em estratégia de cuidado direcionada."},
+    {texto:"Regionalização, relacionada à distribuição de serviços entre municípios", correta:false, exp:"Regionalização trata da organização de serviços entre diferentes municípios e regiões de saúde, e não de uma ação local baseada no diagnóstico de uma microárea específica."},
+    {texto:"Universalidade, relacionada ao acesso irrestrito e igualitário a qualquer serviço de saúde", correta:false, exp:"Universalidade é o princípio que garante acesso a todos, mas não descreve especificamente a lógica de responder a um achado epidemiológico identificado no diagnóstico do território."}
+  ],
+  raciocinio:"A ação exemplifica a territorialização, pois nasce do diagnóstico das necessidades específicas de um território (alta prevalência de obesidade infantil) e se traduz em estratégia de cuidado direcionada a essa realidade."
+},
+{
+  tema:"Territorialização e DCNT",
+  caso:"A equipe de Saúde da Família que atua há oito anos no bairro Cidade Alta discute, em reunião de planejamento, se ainda faz sentido manter os mesmos limites de área de abrangência definidos na implantação da equipe, considerando que o bairro cresceu significativamente com a construção de dois novos conjuntos habitacionais populares nos últimos três anos.",
+  pergunta:"Essa prática é justificada porque:",
+  opcoes:[
+    {texto:"O território é estático e não deveria sofrer qualquer alteração ao longo do tempo", correta:false, exp:"O território deve ser entendido como dinâmico, e não estático, exigindo revisão periódica conforme mudanças na população e na capacidade operacional da equipe."},
+    {texto:"O território é dinâmico, exigindo revisão contínua conforme mudanças na população e na capacidade operacional da equipe", correta:true, exp:"O território deve ser entendido como algo vivo e dinâmico, exigindo revisão contínua dos limites e do cadastro para manter a capacidade de resposta da equipe."},
+    {texto:"A revisão periódica é apenas uma exigência burocrática, sem relação com a qualidade do cuidado", correta:false, exp:"A revisão do território tem relação direta com a qualidade e a viabilidade do cuidado prestado, não sendo apenas uma exigência burocrática sem propósito assistencial."},
+    {texto:"Apenas o gestor municipal, sem participação da equipe, deve revisar os limites territoriais", correta:false, exp:"A revisão do território deve envolver a equipe, que conhece a realidade local, e não ser conduzida isoladamente pelo gestor municipal sem esse conhecimento de campo."}
+  ],
+  raciocinio:"O território deve ser entendido como algo vivo e dinâmico, exigindo revisão contínua dos limites e do cadastro populacional para manter a capacidade de resposta da equipe às necessidades reais da população coberta."
+},
+{
+  tema:"Saúde Mental - Sintomas Depressivos",
+  caso:"Carla, 38 anos, auxiliar administrativa e mãe de dois filhos adolescentes, procura a UBS acompanhada do marido, que relata mudança perceptível no comportamento da esposa há cerca de cinco semanas. Segundo ele, Carla tem se sentido \"inútil\" e \"culpada por tudo que dá errado em casa\", chorando com frequência, além de ter perdido completamente o interesse em cozinhar para a família, atividade que sempre foi um prazer para ela.",
+  pergunta:"Com base nos sintomas fundamentais e acessórios da depressão, essa apresentação sugere:",
+  opcoes:[
+    {texto:"Quadro compatível com sintoma fundamental (perda de interesse) associado a sintoma acessório (ideias de culpa/inutilidade) de depressão", correta:true, exp:"Perda de interesse é um sintoma fundamental da depressão, e ideias de culpa/inutilidade são sintomas acessórios; a combinação de ambos, por mais de duas semanas, sustenta a suspeita de episódio depressivo."},
+    {texto:"Quadro de ansiedade generalizada isolada, sem relação com sintomas depressivos", correta:false, exp:"Perda de interesse e ideias de culpa/inutilidade não são característicos da ansiedade generalizada, que se manifesta principalmente por preocupação excessiva e sintomas físicos de tensão."},
+    {texto:"Reação normal e esperada do dia a dia, sem qualquer significado clínico", correta:false, exp:"A persistência de perda de interesse e ideias de culpa/inutilidade por mais de um mês ultrapassa uma reação transitória do cotidiano, configurando sintomatologia clinicamente relevante."},
+    {texto:"Sintomas exclusivos de transtorno do pânico", correta:false, exp:"O transtorno do pânico se caracteriza por crises episódicas de intensa ansiedade física, e não pelo quadro de perda de interesse e culpa persistentes descrito no caso."}
+  ],
+  raciocinio:"Perda de interesse é um sintoma fundamental da depressão, e ideias de culpa/inutilidade são sintomas acessórios; a combinação de ambos, por mais de duas semanas, sustenta a suspeita de episódio depressivo, exigindo avaliação mais aprofundada."
+},
+{
+  tema:"Saúde Mental - Sintomas Depressivos",
+  caso:"Roberto, 45 anos, pedreiro autônomo, é levado à UBS pela esposa, que relata que, há cerca de um mês, ele deixou de sair para trabalhar e passa a maior parte do dia deitado no sofá, sem iniciativa sequer para tomar banho ou realizar tarefas simples do dia a dia, apesar de negar, quando questionado diretamente, sentir tristeza intensa ou vontade de chorar.",
+  pergunta:"A apresentação predominante de abulia (falta de vontade/iniciativa), mesmo sem tristeza marcante, deve ser interpretada como:",
+  opcoes:[
+    {texto:"Descartando totalmente a possibilidade de depressão, já que humor deprimido seria sempre obrigatório", correta:false, exp:"A depressão pode se manifestar predominantemente pela perda de interesse/prazer, mesmo sem relato marcante de tristeza; portanto, a ausência de humor deprimido intenso não descarta o diagnóstico."},
+    {texto:"Um possível sinal de quadro depressivo, já que a perda de interesse/prazer é um sintoma fundamental que pode se sobrepor à queixa de humor triste", correta:true, exp:"A perda de interesse e a redução da iniciativa (abulia) constituem sintoma fundamental da depressão, podendo ser tão relevantes quanto o humor deprimido para caracterizar o quadro."},
+    {texto:"Sinal exclusivo de transtorno de ansiedade generalizada", correta:false, exp:"A ansiedade generalizada se caracteriza por preocupação excessiva e sintomas de tensão, e não pela perda predominante de vontade e iniciativa descrita no caso."},
+    {texto:"Sintoma sem qualquer relevância clínica, associado apenas à preguiça", correta:false, exp:"Interpretar a abulia apenas como preguiça, sem investigação clínica, pode levar a subdiagnóstico de um quadro depressivo relevante que exige avaliação e conduta adequadas."}
+  ],
+  raciocinio:"A perda de interesse e a redução da iniciativa (abulia) constituem sintoma fundamental da depressão, podendo se apresentar de forma tão relevante quanto o humor deprimido, o que exige atenção da equipe mesmo na ausência de queixa explícita de tristeza."
+},
+{
+  tema:"Saúde Mental - Sintomas Depressivos",
+  caso:"Em consulta de seguimento após seis semanas de tratamento com antidepressivo, Fernanda, 33 anos, relata que o humor melhorou bastante e que já consegue realizar suas atividades diárias com mais disposição, mas ainda mantém, de forma recorrente, pensamentos de que \"não merece ser feliz\" e de culpa excessiva por decisões tomadas no passado.",
+  pergunta:"A persistência desses sintomas acessórios, mesmo com melhora parcial do humor, indica que a equipe deve:",
+  opcoes:[
+    {texto:"Considerar o caso encerrado, pois o humor deprimido já melhorou", correta:false, exp:"A remissão completa do episódio depressivo exige atenção a todos os sintomas, não apenas ao humor; a persistência de ideias de culpa indica que o quadro ainda não está plenamente resolvido."},
+    {texto:"Continuar monitorando ativamente os sintomas acessórios, pois indicam que a remissão ainda não é completa", correta:true, exp:"A avaliação completa da depressão inclui monitoramento de sintomas acessórios, como ideias de culpa, mesmo quando há melhora parcial do humor, pois indicam que a remissão ainda não é plena."},
+    {texto:"Suspender imediatamente o tratamento, já que houve alguma melhora", correta:false, exp:"Suspender o tratamento diante de sintomas acessórios ainda presentes aumenta o risco de recaída e não corresponde à conduta adequada nas fases de manutenção e continuação do tratamento."},
+    {texto:"Ignorar os pensamentos de culpa, pois não fariam parte dos critérios diagnósticos de depressão", correta:false, exp:"Ideias de culpa e inutilidade são reconhecidas como sintomas acessórios da depressão e devem ser ativamente monitoradas, e não ignoradas na avaliação do quadro."}
+  ],
+  raciocinio:"A avaliação completa da depressão inclui o monitoramento de sintomas acessórios, como ideias de culpa e inutilidade, mesmo diante de melhora parcial do humor, pois sua persistência indica que a remissão ainda não é completa."
+},
+{
+  tema:"Desenvolvimento Infantil (3 anos)",
+  caso:"Beatriz, mãe de primeira viagem, leva sua filha Sophia, de 3 anos e 3 meses, à consulta de puericultura de rotina. A criança nasceu a termo, sem intercorrências no parto ou no período neonatal, e nunca apresentou qualquer intercorrência de saúde relevante. Durante a consulta, Beatriz relata, preocupada, que Sophia ainda não consegue subir escadas sozinha, segurando sempre o corrimão com as duas mãos e subindo um degrau de cada vez com ajuda, não forma frases com mais de duas palavras e prefere brincar sozinha mesmo quando está perto de outras crianças na pracinha.",
+  pergunta:"Considerando os marcos esperados para a idade, esse quadro representa:",
+  opcoes:[
+    {texto:"Desenvolvimento absolutamente esperado para a idade, sem necessidade de qualquer investigação", correta:false, exp:"Subir escadas, formar frases completas e brincar com outras crianças são marcos esperados por volta dos 3 anos; sua ausência simultânea não corresponde ao desenvolvimento típico esperado."},
+    {texto:"Atraso em múltiplos domínios do desenvolvimento, exigindo investigação adicional", correta:true, exp:"Aos 3 anos, espera-se que a criança suba escadas, forme frases completas e brinque com outras crianças; a ausência simultânea desses marcos, sem comorbidades prévias, sugere atraso em múltiplos domínios e exige investigação."},
+    {texto:"Variação normal isolada, já que apenas um marco não foi atingido", correta:false, exp:"O caso descreve ausência simultânea de três marcos esperados (motor, linguagem e social), e não de apenas um marco isolado, o que caracteriza atraso em múltiplos domínios."},
+    {texto:"Sinal exclusivo de problema visual, sem relação com o desenvolvimento neuropsicomotor global", correta:false, exp:"Os achados descritos (marcha, linguagem, interação social) não se relacionam especificamente a problema visual, mas sim ao desenvolvimento neuropsicomotor global da criança."}
+  ],
+  raciocinio:"Aos 3 anos, espera-se que a criança suba escadas, forme frases completas e brinque com outras crianças; a ausência simultânea desses marcos, na ausência de comorbidades prévias, sugere atraso em múltiplos domínios do desenvolvimento e exige investigação adicional."
+},
+{
+  tema:"Desenvolvimento Infantil (3 anos)",
+  caso:"Camila leva sua filha Valentina, de 3 anos e 3 meses, à consulta de puericultura de rotina na UBS. Sorridente, ela conta que a filha começou recentemente a subir e descer escadas sozinha, alternando os pés a cada degrau, já consegue contar pequenas histórias inventadas sobre os brinquedos e, na creche que frequenta desde os 2 anos, brinca ativamente com os coleguinhas em jogos de faz de conta.",
+  pergunta:"Essa descrição corresponde a:",
+  opcoes:[
+    {texto:"Desenvolvimento compatível com o esperado para a idade", correta:true, exp:"Subir escadas, contar histórias simples e brincar com outras crianças são marcos esperados por volta dos 3 anos, indicando trajetória de desenvolvimento adequada."},
+    {texto:"Atraso leve, mas ainda dentro da normalidade estatística", correta:false, exp:"A descrição não indica qualquer atraso; os marcos relatados são exatamente os esperados para a idade de 3 anos, sem sinais de atraso."},
+    {texto:"Sinais de alerta que exigem encaminhamento urgente", correta:false, exp:"Não há qualquer sinal de alerta descrito no caso; ao contrário, os marcos relatados são compatíveis com desenvolvimento típico esperado para a idade."},
+    {texto:"Regressão de marcos anteriormente adquiridos", correta:false, exp:"Regressão significaria perda de habilidades já adquiridas; o caso descreve, ao contrário, aquisição progressiva e esperada de novos marcos."}
+  ],
+  raciocinio:"Subir escadas, contar histórias simples e brincar com outras crianças são marcos esperados por volta dos 3 anos, indicando trajetória de desenvolvimento adequada para essa faixa etária."
+},
+{
+  tema:"Desenvolvimento Infantil (3 anos)",
+  caso:"Na consulta de puericultura de Rafael, 3 anos e 3 meses, previamente hígido e sem qualquer história de intercorrência de saúde, a mãe relata, preocupada, que nas últimas semanas o filho parou de falar diversas palavras que já usava normalmente há meses, como \"mamãe\", \"água\" e \"quero\", e agora se comunica principalmente por gestos e choro.",
+  pergunta:"Esse achado de regressão de marcos previamente adquiridos deve ser interpretado como:",
+  opcoes:[
+    {texto:"Variação normal do desenvolvimento infantil, sem necessidade de investigação", correta:false, exp:"A regressão de habilidades já adquiridas não corresponde à variabilidade individual esperada; trata-se de sinal de alerta que exige investigação, e não apenas observação."},
+    {texto:"Sinal de alerta de maior gravidade, que exige investigação imediata, independentemente da idade", correta:true, exp:"A regressão de habilidades já adquiridas é considerada sinal de alerta de maior gravidade no desenvolvimento infantil, exigindo investigação imediata independentemente da idade da criança."},
+    {texto:"Consequência esperada do início da fase escolar", correta:false, exp:"O início de atividades escolares não justifica perda de habilidades já adquiridas; regressão de marcos é sempre um achado que exige investigação, não uma consequência esperada e benigna."},
+    {texto:"Situação que só deve ser investigada se a criança tiver mais de 5 anos", correta:false, exp:"A regressão de marcos deve ser investigada imediatamente, independentemente da idade da criança, e não apenas a partir de determinada faixa etária."}
+  ],
+  raciocinio:"A regressão de habilidades já adquiridas é considerada sinal de alerta de maior gravidade no desenvolvimento infantil, exigindo investigação imediata, independentemente da idade da criança e da ausência de comorbidades prévias."
+},
+{
+  tema:"Desenvolvimento Infantil (3 anos)",
+  caso:"Durante a consulta de puericultura de uma criança de 3 anos, o médico de família precisa avaliar se o desenvolvimento observado está dentro da variação esperada ou se representa verdadeiro atraso, já que a mãe relatou, de forma isolada, que a criança ainda não consegue amarrar os próprios sapatos sozinha.",
+  pergunta:"Para essa diferenciação, a conduta mais adequada é:",
+  opcoes:[
+    {texto:"Avaliar apenas um marco isolado em uma única consulta, sem considerar o conjunto de habilidades", correta:false, exp:"Avaliar um único marco isoladamente, sem considerar o conjunto de domínios e a evolução ao longo do tempo, pode levar a conclusões equivocadas sobre o desenvolvimento da criança."},
+    {texto:"Avaliar o conjunto de domínios do desenvolvimento, a evolução ao longo do tempo e o contexto da criança, e não apenas um marco isolado", correta:true, exp:"Os marcos representam faixas de aquisição, não datas fixas; a avaliação deve considerar o conjunto de domínios, a progressão e a ausência de regressão, e não um único marco isolado."},
+    {texto:"Considerar qualquer atraso em um único marco como indicação automática de encaminhamento especializado", correta:false, exp:"Encaminhar automaticamente diante de um único marco não atingido, sem considerar o conjunto de domínios e a evolução, pode gerar encaminhamentos desnecessários e desconsiderar a variabilidade individual esperada."},
+    {texto:"Ignorar completamente os marcos de desenvolvimento até os 5 anos de idade", correta:false, exp:"O acompanhamento dos marcos do desenvolvimento deve ser feito continuamente desde os primeiros meses de vida, e não ignorado até os 5 anos, dado o papel da puericultura na vigilância do desenvolvimento."}
+  ],
+  raciocinio:"Os marcos do desenvolvimento representam faixas de aquisição, não datas fixas; a avaliação deve considerar o conjunto de domínios (motor, linguagem, social, cognitivo), a evolução ao longo do tempo e a ausência de regressão, e não um único marco isolado."
+},
+{
+  tema:"Controle Social e Gestão",
+  caso:"Durante uma reunião do Conselho Gestor da UBS Jardim das Palmeiras, moradores relatam que a maior parte da população economicamente ativa do bairro trabalha em regime de horário comercial em um polo industrial próximo, e por isso não consegue comparecer às consultas agendadas, o que tem prejudicado o acompanhamento longitudinal de doenças crônicas na comunidade.",
+  pergunta:"Diante dessa demanda apresentada pelo Conselho Gestor, a resposta mais adequada da gestão da unidade é:",
+  opcoes:[
+    {texto:"Ignorar a demanda, já que o Conselho Gestor não teria papel relevante na organização dos serviços", correta:false, exp:"O Conselho Gestor é instância legítima de participação social, com papel relevante em apontar barreiras de acesso e influenciar a organização dos serviços de saúde."},
+    {texto:"Considerar a ampliação/adequação do horário de funcionamento da unidade, de forma a garantir abrangência e longitudinalidade a essa parcela da população", correta:true, exp:"O Conselho Gestor é instância de participação social que pode apontar barreiras de acesso; a resposta da gestão deve buscar garantir atributos como abrangência e longitudinalidade, o que pode incluir ajuste do horário de funcionamento."},
+    {texto:"Recomendar que essa população utilize exclusivamente serviços privados de saúde", correta:false, exp:"Direcionar a população para serviços privados contraria o princípio de acesso universal e a responsabilidade da equipe sobre a população adstrita ao território."},
+    {texto:"Determinar o fechamento da unidade aos finais de semana, sem qualquer outra alteração", correta:false, exp:"Fechar a unidade em mais um período, sem qualquer ajuste que amplie o acesso, não responde à demanda apresentada pelo Conselho Gestor e pode até reduzir ainda mais o acesso da população."}
+  ],
+  raciocinio:"O Conselho Gestor é instância de participação social que pode apontar barreiras de acesso enfrentadas pela população; a resposta da gestão deve buscar garantir atributos como abrangência e longitudinalidade, o que pode incluir a adequação do horário de funcionamento da unidade."
+},
+{
+  tema:"Controle Social e Gestão",
+  caso:"Na 5ª Conferência Municipal de Saúde, realizada no auditório da Câmara de Vereadores, usuários dos serviços de saúde, profissionais de diferentes categorias e gestores municipais se reúnem para debater e votar as prioridades da política municipal de saúde para o próximo quadriênio.",
+  pergunta:"Essa instância de participação, prevista na legislação do SUS, tem como característica principal:",
+  opcoes:[
+    {texto:"Ser um espaço meramente consultivo, sem qualquer poder deliberativo", correta:false, exp:"As Conferências de Saúde são instâncias máximas de deliberação do controle social, e não apenas espaços consultivos sem poder de definição de prioridades."},
+    {texto:"Ser uma instância de controle social, com representação paritária de usuários, profissionais e gestores, que define prioridades e linhas de ação", correta:true, exp:"As Conferências de Saúde são instâncias máximas de deliberação do controle social, com participação paritária, devendo ocorrer periodicamente para definir prioridades e linhas de ação em saúde."},
+    {texto:"Ser restrita exclusivamente a gestores públicos, sem participação da população", correta:false, exp:"A legislação do SUS prevê participação paritária de usuários, profissionais de saúde e gestores nas instâncias de controle social, e não apenas de gestores públicos."},
+    {texto:"Ocorrer apenas uma única vez, sem qualquer periodicidade estabelecida", correta:false, exp:"As Conferências de Saúde devem ocorrer periodicamente nas três esferas de governo, e não como evento único e isolado."}
+  ],
+  raciocinio:"As Conferências de Saúde são instâncias máximas de deliberação do controle social, com participação paritária de usuários, profissionais e gestores, devendo ocorrer periodicamente para definir prioridades e linhas de ação em saúde."
+},
+{
+  tema:"Controle Social e Gestão",
+  caso:"O novo secretário municipal de saúde anuncia, em entrevista, que as decisões sobre reorganização dos serviços de atenção básica do município serão tomadas exclusivamente pela equipe técnica da Secretaria, sem necessidade de consulta aos Conselhos Locais de Saúde, alegando que isso tornaria o processo \"mais ágil e menos burocrático\".",
+  pergunta:"Essa postura contraria qual princípio organizativo do SUS?",
+  opcoes:[
+    {texto:"Regionalização", correta:false, exp:"Regionalização se refere à organização dos serviços entre municípios e regiões de saúde, e não à participação da população nas decisões, tema central do caso descrito."},
+    {texto:"Participação social/controle social", correta:true, exp:"O SUS prevê a participação da população, por meio de seus representantes, na formulação e no controle da execução das políticas de saúde, o que caracteriza o princípio da participação/controle social, contrariado pela postura descrita."},
+    {texto:"Descentralização administrativa", correta:false, exp:"Descentralização trata da redistribuição de responsabilidades entre esferas de governo, e não da participação da população nas decisões sobre organização dos serviços."},
+    {texto:"Resolubilidade", correta:false, exp:"Resolubilidade se refere à capacidade do serviço de resolver o problema de saúde até o nível de sua complexidade, não estando relacionada à ausência de participação social nas decisões."}
+  ],
+  raciocinio:"O SUS prevê a participação da população, por meio de seus representantes, na formulação e no controle da execução das políticas de saúde, o que caracteriza o princípio da participação/controle social, diretamente contrariado por decisões tomadas sem qualquer consulta à população."
+},
+{
+  tema:"Saúde Indígena",
+  caso:"Kunhã, 34 anos, indígena da etnia local aldeada a cerca de 60 km da cidade, é atendida na UBS de referência por queixa de dor abdominal recorrente. Após avaliação clínica, o médico de família prescreve um antiespasmódico, mas a paciente relata que prefere associar o tratamento a um chá preparado pela parteira tradicional de sua aldeia, utilizado há gerações em sua comunidade para esse tipo de queixa.",
+  pergunta:"A conduta mais adequada do médico de família, considerando a competência cultural, é:",
+  opcoes:[
+    {texto:"Proibir taxativamente qualquer prática tradicional, exigindo adesão exclusiva ao tratamento biomédico", correta:false, exp:"Impor exclusividade ao tratamento biomédico, sem considerar as práticas culturais do paciente, contraria o princípio de respeito à cultura e à autonomia no cuidado culturalmente seguro."},
+    {texto:"Acolher a preferência do paciente, buscando negociar um plano de cuidado compartilhado que respeite sua cultura e autonomia, sem abrir mão da segurança clínica", correta:true, exp:"O cuidado culturalmente seguro envolve escuta respeitosa, autonomia e negociação de um plano compartilhado, combinando segurança clínica com respeito à cultura do paciente."},
+    {texto:"Recusar o atendimento até que o paciente abandone completamente suas práticas tradicionais", correta:false, exp:"Recusar o atendimento por conta das práticas culturais do paciente é incompatível com o princípio de acolhimento e respeito à cultura, prejudicando o vínculo e o acesso ao cuidado."},
+    {texto:"Aceitar substituir integralmente o tratamento biomédico pelas práticas tradicionais, sem qualquer acompanhamento clínico", correta:false, exp:"Abandonar totalmente o acompanhamento clínico compromete a segurança do paciente; a proposta correta é negociar um plano compartilhado, e não abrir mão do monitoramento clínico."}
+  ],
+  raciocinio:"O cuidado culturalmente seguro envolve escuta respeitosa, autonomia e negociação de um plano de cuidado compartilhado que respeite a cultura do paciente, sem abrir mão da segurança clínica nem impor coerção sobre suas escolhas."
+},
+{
+  tema:"Saúde Indígena",
+  caso:"A equipe de Saúde da Família responsável pelo território que inclui uma aldeia indígena planeja realizar uma ação educativa sobre prevenção de verminoses, agravo prevalente na comunidade segundo os dados de atendimento dos últimos meses.",
+  pergunta:"Para que essa ação seja compatível com o cuidado culturalmente seguro, a equipe deve:",
+  opcoes:[
+    {texto:"Aplicar exatamente o mesmo material educativo padronizado utilizado em áreas urbanas, sem qualquer adaptação", correta:false, exp:"Aplicar material sem adaptação cultural e linguística contraria o princípio de compreender significados culturais, língua e prioridades da comunidade indígena."},
+    {texto:"Construir a ação de forma negociada com a comunidade e seus agentes tradicionais, respeitando significados culturais e a língua local", correta:true, exp:"O cuidado culturalmente seguro pressupõe negociação e construção compartilhada com a comunidade, respeitando significados culturais, língua e prioridades locais."},
+    {texto:"Realizar a ação sem qualquer consulta prévia às lideranças da comunidade", correta:false, exp:"Ignorar as lideranças e agentes tradicionais da comunidade contraria o princípio de negociação e construção compartilhada do cuidado culturalmente seguro."},
+    {texto:"Impor a participação obrigatória de todos os membros da comunidade, independentemente de seu desejo", correta:false, exp:"Impor participação obrigatória contraria o respeito à autonomia da comunidade, princípio central do cuidado culturalmente seguro."}
+  ],
+  raciocinio:"O cuidado culturalmente seguro pressupõe negociação e construção compartilhada da ação de saúde com a comunidade e seus agentes tradicionais, respeitando significados culturais, língua e prioridades locais, sem imposição de conteúdos ou participação."
+},
+{
+  tema:"Saúde Indígena",
+  caso:"Seu Werá, 58 anos, indígena, é atendido na UBS por quadro compatível com necessidade de biópsia para investigação de uma lesão de pele suspeita. Após receber explicação detalhada sobre riscos, benefícios e a importância do procedimento para o diagnóstico, ele recusa a realização da biópsia, afirmando que, segundo os costumes de seu povo, não é permitido retirar partes do corpo dessa forma.",
+  pergunta:"A conduta correta do médico de família é:",
+  opcoes:[
+    {texto:"Realizar o procedimento de qualquer forma, já que a decisão médica deveria prevalecer sobre a vontade do paciente", correta:false, exp:"Realizar o procedimento contra a vontade do paciente, após informação clara e recusa consciente, viola o princípio de autonomia central no cuidado culturalmente seguro."},
+    {texto:"Respeitar a autonomia do paciente, mantendo acompanhamento clínico, sinais de alarme e reavaliação futura, sem coerção", correta:true, exp:"O respeito à autonomia do paciente é central no cuidado culturalmente seguro; a equipe deve manter acompanhamento e monitoramento, sem recorrer à coerção diante da recusa informada."},
+    {texto:"Excluir o paciente do acompanhamento da equipe por não aceitar a conduta recomendada", correta:false, exp:"Excluir o paciente do acompanhamento por discordância cultural rompe o vínculo longitudinal e contraria o princípio de manter acesso e segurança clínica mesmo diante de recusas informadas."},
+    {texto:"Comunicar a recusa às autoridades de saúde para forçar o cumprimento do procedimento", correta:false, exp:"Buscar forçar o cumprimento do procedimento por meio de autoridades externas contraria o respeito à autonomia e à negociação que caracterizam o cuidado culturalmente seguro."}
+  ],
+  raciocinio:"O respeito à autonomia do paciente é central no cuidado culturalmente seguro; diante da recusa informada, a equipe deve manter acompanhamento clínico, orientar sinais de alarme e reavaliar futuramente, sem recorrer a coerção."
+},
+{
+  tema:"Saúde Mental - Ansiedade",
+  caso:"Fernanda, 27 anos, vendedora, procura atendimento de urgência na UBS relatando que, enquanto trabalhava no caixa da loja, sentiu de repente palpitações intensas, sudorese fria, sensação de que iria morrer e falta de ar, sem qualquer fator desencadeante aparente. O episódio durou cerca de 10 minutos e, desde então, há duas semanas, ela relata viver com medo constante de que uma nova crise aconteça, a ponto de evitar sair de casa sozinha.",
+  pergunta:"Esse quadro é mais compatível com:",
+  opcoes:[
+    {texto:"Transtorno de ansiedade generalizada", correta:false, exp:"O transtorno de ansiedade generalizada se caracteriza por preocupação contínua e desproporcional por pelo menos 6 meses, e não por crises episódicas intensas e de curta duração como as descritas."},
+    {texto:"Transtorno do pânico", correta:true, exp:"Ataques recorrentes e inesperados, com sintomas intensos e curta duração (cerca de 10 minutos), associados a preocupação persistente com novas crises, caracterizam o transtorno do pânico."},
+    {texto:"Depressão maior", correta:false, exp:"O quadro descrito não apresenta humor deprimido ou perda de interesse persistentes, mas sim crises episódicas de sintomas físicos intensos, compatíveis com transtorno do pânico."},
+    {texto:"Ansiedade fisiológica normal, sem significado patológico", correta:false, exp:"A intensidade, a recorrência e a preocupação persistente com novas crises tornam esse quadro desproporcional e incômodo, caracterizando ansiedade patológica, e não uma reação fisiológica normal."}
+  ],
+  raciocinio:"Ataques recorrentes e inesperados, com sintomas intensos e curta duração (cerca de 10 minutos), associados a preocupação persistente com novas crises ou suas implicações, caracterizam o transtorno do pânico."
+},
+{
+  tema:"Saúde Mental - Ansiedade",
+  caso:"Marcelo, 40 anos, engenheiro, procura a UBS relatando que, há mais de 8 meses, vive preocupado excessivamente com praticamente tudo — o emprego, a saúde dos filhos, as contas do mês — mesmo quando, segundo ele mesmo reconhece, não há motivo real e proporcional para tanta apreensão. Relata também tensão muscular constante no pescoço, irritabilidade com a família e dificuldade de se concentrar no trabalho, sem relatar qualquer episódio de crise aguda e intensa.",
+  pergunta:"Esse quadro é mais compatível com:",
+  opcoes:[
+    {texto:"Transtorno do pânico", correta:false, exp:"O transtorno do pânico se manifesta por crises episódicas e intensas, o que não corresponde ao padrão contínuo de preocupação descrito, sem ataques bem definidos."},
+    {texto:"Transtorno de ansiedade generalizada", correta:true, exp:"Preocupação excessiva e desproporcional, com sintomas contínuos (não em crises) por mais de 6 meses, associada a tensão muscular, irritabilidade e dificuldade de concentração, é compatível com transtorno de ansiedade generalizada."},
+    {texto:"Transtorno depressivo maior isolado", correta:false, exp:"O quadro descrito centra-se em preocupação excessiva e sintomas de tensão contínuos, e não em humor deprimido ou perda de interesse, sendo mais compatível com ansiedade generalizada."},
+    {texto:"Reação aguda a estresse, sem necessidade de acompanhamento", correta:false, exp:"A persistência dos sintomas por mais de 8 meses ultrapassa o critério de reação aguda e transitória, exigindo avaliação e acompanhamento adequados."}
+  ],
+  raciocinio:"Preocupação excessiva e desproporcional, com sintomas contínuos (não organizados em crises) por período superior a 6 meses, associada a tensão muscular, irritabilidade e dificuldade de concentração, é compatível com transtorno de ansiedade generalizada."
+},
+{
+  tema:"Saúde Mental - Ansiedade",
+  caso:"Paciente em acompanhamento por transtorno de ansiedade generalizada há 5 semanas, em uso de sertralina 50mg/dia, retorna à UBS relatando melhora discreta da preocupação excessiva, mas ainda com queixas de tensão muscular e dificuldade de concentração no trabalho.",
+  pergunta:"Considerando a farmacocinética esperada do tratamento, a conduta mais adequada neste momento é:",
+  opcoes:[
+    {texto:"Considerar o tratamento ineficaz e encaminhar imediatamente para especialista, já que 5 semanas seria tempo suficiente para avaliar resposta", correta:false, exp:"Os psicofármacos utilizados no tratamento da ansiedade apresentam latência para o efeito terapêutico; 5 semanas ainda é período inicial, insuficiente para concluir ineficácia do tratamento."},
+    {texto:"Manter o tratamento, pois a latência para efeito terapêutico pode se estender além desse período, reavaliando a resposta mais adiante", correta:true, exp:"Os psicofármacos utilizados no tratamento da ansiedade apresentam latência para o efeito terapêutico, com duração de tratamento que pode variar de 6 a 18 meses, sendo esperado aguardar tempo adequado antes de considerar falha terapêutica."},
+    {texto:"Suspender abruptamente a medicação, pois não houve resposta completa", correta:false, exp:"Suspender abruptamente antes do tempo adequado de latência pode comprometer a resposta terapêutica e favorecer recaída, não sendo a conduta indicada diante de melhora apenas discreta."},
+    {texto:"Trocar imediatamente para um tricíclico, já na primeira reavaliação", correta:false, exp:"Tricíclicos são reservados como alternativa para casos que não respondem após tempo adequado de tratamento com ISRS/ISRSN, dado seu maior perfil de efeitos adversos, e não a primeira opção diante de resposta ainda inicial."}
+  ],
+  raciocinio:"Os psicofármacos utilizados no tratamento da ansiedade apresentam latência para o efeito terapêutico, com duração de tratamento que pode variar de 6 a 18 meses; é esperado aguardar tempo adequado antes de considerar falha terapêutica ou trocar a medicação."
+},
+{
+  tema:"Saúde Mental - Ansiedade",
+  caso:"Um paciente em tratamento para transtorno de ansiedade generalizada, já com dose otimizada de antidepressivo e acompanhamento regular na UBS há mais de 8 semanas, mantém sintomas significativos de preocupação excessiva e tensão muscular, sem qualquer melhora perceptível desde o início do tratamento.",
+  pergunta:"Diante desse caso refratário, a conduta mais adequada é:",
+  opcoes:[
+    {texto:"Manter exatamente a mesma conduta indefinidamente, sem qualquer mudança", correta:false, exp:"Manter a mesma conduta indefinidamente diante de um caso já caracterizado como refratário (tratamento otimizado por mais de 8 semanas sem resposta) não corresponde ao critério de encaminhamento estabelecido para esses casos."},
+    {texto:"Considerar encaminhamento para avaliação especializada, dado o critério de refratariedade ao tratamento", correta:true, exp:"Casos refratários ao tratamento (geralmente definidos por ausência de resposta após mais de 8 semanas) constituem critério para encaminhamento à avaliação especializada em saúde mental."},
+    {texto:"Suspender todo o tratamento e orientar apenas repouso", correta:false, exp:"Suspender todo o tratamento sem substituição ou encaminhamento adequado expõe o paciente à persistência dos sintomas, não sendo conduta recomendada diante de refratariedade."},
+    {texto:"Encaminhar para tratamento exclusivamente cirúrgico", correta:false, exp:"Não há indicação de tratamento cirúrgico para transtorno de ansiedade generalizada; a conduta adequada diante de refratariedade é o encaminhamento para avaliação especializada em saúde mental."}
+  ],
+  raciocinio:"Casos refratários ao tratamento farmacológico otimizado por mais de 8 semanas constituem critério estabelecido para encaminhamento à avaliação especializada em saúde mental, dentro dos critérios de quando referenciar um caso de ansiedade."
+},
+{
+  tema:"Saúde Mental - Ansiedade",
+  caso:"Durante o rastreio ativo de sintomas de ansiedade em uma consulta de rotina, o médico de família investiga se o paciente apresenta comportamentos repetitivos, perguntando diretamente se ele sente necessidade de checar repetidamente se trancou a porta de casa, contar objetos ou organizar itens de determinada forma antes de conseguir sair para o trabalho, e se essas atitudes tomam tempo significativo do seu dia.",
+  pergunta:"Essa investigação está direcionada à identificação de sintomas sugestivos de:",
+  opcoes:[
+    {texto:"Transtorno do pânico", correta:false, exp:"O transtorno do pânico se caracteriza por crises episódicas de sintomas físicos intensos, e não por rituais de checagem, contagem ou organização."},
+    {texto:"Transtorno obsessivo-compulsivo", correta:true, exp:"Perguntas sobre \"manias\" ou \"rituais\" de checagem, contagem, limpeza ou organização que incomodam e tomam tempo significativo fazem parte do rastreio de sintomas obsessivo-compulsivos, que devem ser investigados na avaliação de ansiedade."},
+    {texto:"Transtorno depressivo maior", correta:false, exp:"A depressão maior se caracteriza por humor deprimido e perda de interesse, e não por rituais de checagem, contagem ou organização repetitiva."},
+    {texto:"Ansiedade fisiológica normal", correta:false, exp:"Rituais que incomodam e tomam tempo significativo do dia (pelo menos uma hora) ultrapassam a ansiedade fisiológica normal, configurando sintomatologia que exige investigação específica."}
+  ],
+  raciocinio:"Perguntas sobre \"manias\" ou \"rituais\" de checagem, contagem, limpeza ou organização que incomodam e tomam tempo significativo do dia fazem parte do rastreio de sintomas obsessivo-compulsivos, elemento importante na avaliação clínica da ansiedade na APS."
+},
+{
+  tema:"Desenvolvimento Infantil (6 meses)",
+  caso:"Larissa leva seu filho Miguel, de 6 meses, à consulta de puericultura de rotina. Ele nasceu a termo, sem intercorrências, e vem em acompanhamento regular desde o nascimento. Durante o exame, a mãe relata que Miguel já consegue sentar com apoio das almofadas no berço, passa brinquedos de uma mão para a outra com facilidade e começou recentemente a emitir sons como \"bababa\" repetidamente.",
+  pergunta:"Esses achados representam:",
+  opcoes:[
+    {texto:"Atraso significativo do desenvolvimento para a idade", correta:false, exp:"Os marcos relatados são exatamente os esperados para a idade de 6 meses, não configurando atraso do desenvolvimento."},
+    {texto:"Marcos esperados para a idade de 6 meses", correta:true, exp:"Sentar com apoio, transferir objetos entre as mãos e balbuciar são marcos esperados aos 6 meses de idade, indicando desenvolvimento adequado."},
+    {texto:"Sinais de alerta que exigem investigação imediata", correta:false, exp:"Não há qualquer sinal de alerta nesse relato; os marcos descritos são compatíveis com o desenvolvimento típico esperado para 6 meses."},
+    {texto:"Desenvolvimento compatível apenas com crianças de 12 meses", correta:false, exp:"Os marcos descritos (sentar com apoio, transferir objetos, balbuciar) são esperados aos 6 meses, e não representam um desenvolvimento avançado típico de 12 meses."}
+  ],
+  raciocinio:"Sentar com apoio, transferir objetos entre as mãos e balbuciar são marcos esperados aos 6 meses de idade, conforme a vigilância do desenvolvimento realizada na consulta de puericultura, indicando trajetória adequada."
+},
+{
+  tema:"Desenvolvimento Infantil (6 meses)",
+  caso:"Joana leva sua filha Alice, de 6 meses, à consulta de puericultura. Preocupada, ela relata que a filha ainda não sustenta bem a cabeça quando colocada sentada, não parece diferenciar quando é a mãe ou outra pessoa que a segura no colo, e até o momento nunca emitiu qualquer tipo de som, nem mesmo choro modulado.",
+  pergunta:"Esse conjunto de achados, incompatível com os marcos esperados para a idade (que já deveriam estar presentes desde os 4 meses), deve ser interpretado como:",
+  opcoes:[
+    {texto:"Variação normal do desenvolvimento, sem necessidade de qualquer investigação", correta:false, exp:"Sustentar a cabeça e reconhecer o cuidador são marcos esperados já aos 4 meses; sua ausência aos 6 meses, associada à falta de vocalização, ultrapassa a variação normal e exige investigação."},
+    {texto:"Sinal de alerta que exige avaliação e investigação do desenvolvimento neuropsicomotor", correta:true, exp:"Sustentar a cabeça e reconhecer o cuidador são marcos esperados já aos 4 meses; sua ausência aos 6 meses, associada à falta de vocalização, representa atraso significativo que exige investigação."},
+    {texto:"Consequência esperada e normal até os 9 meses de idade", correta:false, exp:"Esses marcos já deveriam estar presentes bem antes dos 6 meses (por volta dos 2 a 4 meses), não sendo esperado que só apareçam aos 9 meses."},
+    {texto:"Achado que só deve ser valorizado após os 12 meses", correta:false, exp:"Atrasos tão significativos em marcos esperados já aos 4 meses devem ser valorizados e investigados imediatamente, e não postergados até os 12 meses."}
+  ],
+  raciocinio:"Sustentar a cabeça e reconhecer o cuidador são marcos esperados já aos 4 meses de vida; sua ausência aos 6 meses, associada à falta de vocalização, representa atraso significativo do desenvolvimento neuropsicomotor que exige investigação imediata."
+},
+{
+  tema:"Desenvolvimento Infantil (6 meses)",
+  caso:"Durante a consulta de puericultura de uma criança de 6 meses, previamente hígida e com desenvolvimento adequado até o momento, o médico de família explica detalhadamente à mãe o que esperar nos próximos meses, incluindo o início do engatinhar e o possível surgimento de estranhamento a pessoas desconhecidas, orientando-a a não se preocupar caso a criança fique mais arisca com estranhos a partir dessa fase.",
+  pergunta:"Essa prática de informar antecipadamente a família sobre as próximas fases do desenvolvimento é chamada de:",
+  opcoes:[
+    {texto:"Vigilância epidemiológica", correta:false, exp:"Vigilância epidemiológica se refere ao monitoramento de doenças e agravos na população, e não à orientação antecipada da família sobre o desenvolvimento infantil."},
+    {texto:"Orientação antecipatória", correta:true, exp:"A orientação antecipatória consiste em preparar a família para as próximas fases do desenvolvimento infantil, sendo prática com efetividade documentada nas consultas de puericultura."},
+    {texto:"Notificação compulsória", correta:false, exp:"Notificação compulsória se refere à comunicação obrigatória de agravos como violência a órgãos competentes, não tendo relação com a orientação sobre desenvolvimento infantil."},
+    {texto:"Triagem neonatal", correta:false, exp:"Triagem neonatal se refere aos testes realizados logo após o nascimento (como teste do pezinho e do olhinho), e não à orientação sobre as próximas fases do desenvolvimento durante a puericultura."}
+  ],
+  raciocinio:"A orientação antecipatória consiste em preparar a família para as próximas fases do desenvolvimento infantil em cada consulta de puericultura, sendo prática com efetividade documentada em diversos desfechos."
+},
+{
+  tema:"Desenvolvimento Infantil (6 meses)",
+  caso:"Vitória, nascida com 32 semanas de idade gestacional e que passou três semanas internada na UTI neonatal, é levada aos 6 meses de idade cronológica para consulta de puericultura de rotina, onde o médico de família precisa avaliar se os marcos do desenvolvimento estão adequados para a idade.",
+  pergunta:"Para essa avaliação, a conduta correta é:",
+  opcoes:[
+    {texto:"Utilizar a idade cronológica (6 meses) exatamente como em qualquer criança nascida a termo, sem qualquer ajuste", correta:false, exp:"Usar apenas a idade cronológica em prematuros pode levar a interpretações equivocadas sobre atraso do desenvolvimento, já que sua maturação segue outro parâmetro de referência nos primeiros anos."},
+    {texto:"Utilizar a idade corrigida para avaliação dos marcos do desenvolvimento em prematuros, conforme recomendado até 24–36 meses", correta:true, exp:"Em crianças prematuras, recomenda-se o uso da idade corrigida até 24–36 meses para avaliação dos marcos de crescimento e desenvolvimento, evitando conclusões equivocadas sobre atraso."},
+    {texto:"Considerar que a prematuridade não interfere em nenhuma avaliação de desenvolvimento", correta:false, exp:"A prematuridade interfere diretamente na interpretação dos marcos do desenvolvimento, justificando o uso da idade corrigida em vez da idade cronológica nos primeiros anos."},
+    {texto:"Aguardar até os 5 anos para iniciar qualquer avaliação de desenvolvimento em prematuros", correta:false, exp:"A vigilância do desenvolvimento deve ser contínua desde os primeiros meses de vida, inclusive em prematuros, utilizando idade corrigida, e não postergada até os 5 anos."}
+  ],
+  raciocinio:"Em crianças prematuras, recomenda-se o uso da idade corrigida (idade cronológica menos o tempo de prematuridade) até 24–36 meses para avaliação dos marcos de crescimento e desenvolvimento, evitando interpretações equivocadas de atraso."
+},
+{
+  tema:"Gestão de Risco e Território",
+  caso:"A equipe de Saúde da Família responsável pela comunidade Nova Esperança, uma ocupação irregular com mais de 8 mil habitantes atendida por uma única equipe dimensionada para cobrir até 4 mil pessoas, enfrenta filas que se formam desde antes do amanhecer, com usuários aguardando horas para conseguir uma ficha de atendimento no mesmo dia.",
+  pergunta:"Diante desse cenário, a conduta mais adequada da equipe é:",
+  opcoes:[
+    {texto:"Atender por ordem de chegada, sem qualquer critério clínico adicional, até que o horário da unidade se esgote", correta:false, exp:"Atender estritamente por ordem de chegada, sem qualquer critério de risco, pode postergar o atendimento de casos mais graves e vulneráveis, contrariando a lógica de priorização recomendada."},
+    {texto:"Priorizar a estratificação de risco e a identificação de grupos mais vulneráveis, direcionando o cuidado a quem mais necessita", correta:true, exp:"Em cenários de demanda muito acima da capacidade, a equipe deve utilizar estratificação de risco e priorização de grupos vulneráveis como estratégia de gestão do cuidado, garantindo atendimento prioritário a quem mais necessita."},
+    {texto:"Recusar novos cadastros de famílias no território, independentemente da necessidade de saúde", correta:false, exp:"Recusar cadastro de famílias do próprio território contraria o princípio de responsabilidade sanitária sobre a população adstrita, mesmo diante de sobrecarga de demanda."},
+    {texto:"Encaminhar toda a demanda para atendimento hospitalar, encerrando o atendimento pela equipe de APS", correta:false, exp:"Transferir toda a demanda para o hospital contraria o papel resolutivo e coordenador da atenção primária, sobrecarregando desnecessariamente outro nível de atenção."}
+  ],
+  raciocinio:"Em cenários de demanda muito acima da capacidade operacional, a equipe deve priorizar a estratificação de risco e a identificação de grupos vulneráveis, direcionando o cuidado a quem mais necessita, sem abrir mão da responsabilidade sobre toda a população do território."
+},
+{
+  tema:"Gestão de Risco e Território",
+  caso:"Na mesma comunidade de alta densidade populacional e recursos limitados, a equipe de Saúde da Família precisa decidir, diante da impossibilidade de atender todos os pacientes com hipertensão e diabetes na frequência recomendada pelos protocolos, como organizar a agenda de consultas programadas para os próximos meses.",
+  pergunta:"A estratégia mais adequada, alinhada à gestão de risco em cenários de superpopulação, é:",
+  opcoes:[
+    {texto:"Atender todos os pacientes crônicos com a mesma frequência, independentemente do grau de controle da doença", correta:false, exp:"Tratar todos os pacientes crônicos com a mesma frequência, independentemente da gravidade, não otimiza o uso de recursos limitados diante de uma demanda muito acima da capacidade."},
+    {texto:"Estratificar os pacientes conforme o risco clínico, intensificando o acompanhamento dos casos de maior gravidade ou descompensação", correta:true, exp:"A estratificação de risco permite direcionar recursos limitados de forma racional, intensificando o acompanhamento dos casos mais graves, mesmo em cenários de sobrecarga."},
+    {texto:"Suspender o acompanhamento programado de doenças crônicas até que a demanda diminua", correta:false, exp:"Suspender o acompanhamento de condições crônicas pode agravar o quadro clínico dos pacientes, sendo uma medida inadequada mesmo diante de sobrecarga de demanda."},
+    {texto:"Transferir toda a responsabilidade do acompanhamento para os próprios pacientes, sem suporte da equipe", correta:false, exp:"Abandonar o acompanhamento programado e transferir a responsabilidade inteiramente ao paciente contraria a responsabilidade sanitária da equipe sobre a população adstrita."}
+  ],
+  raciocinio:"A estratificação de risco permite direcionar recursos limitados de forma racional, intensificando o acompanhamento dos casos mais graves ou descompensados, mesmo em territórios com demanda muito acima da capacidade operacional da equipe."
+},
+{
+  tema:"Gestão de Risco e Território",
+  caso:"A equipe de Saúde da Família que atua na comunidade Nova Esperança, marcada por alta vulnerabilidade social e demanda muito acima da capacidade operacional da equipe, se reúne para planejar as prioridades assistenciais dos próximos seis meses, diante da impossibilidade de atender a todas as demandas da forma como gostariam.",
+  pergunta:"Com base nos princípios de gestão de risco em cenários de superpopulação, a equipe deve:",
+  opcoes:[
+    {texto:"Tratar todas as demandas como igualmente prioritárias, sem qualquer diferenciação", correta:false, exp:"Tratar todas as demandas como igualmente prioritárias, sem diferenciação de risco, dificulta a resposta adequada aos casos mais graves em um cenário de recursos limitados."},
+    {texto:"Identificar e priorizar grupos vulneráveis e de maior risco, organizando o cuidado de forma proporcional à necessidade", correta:true, exp:"Em contextos de demanda muito acima da capacidade, a priorização de grupos vulneráveis e a estratificação de risco são estratégias centrais de gestão do cuidado na APS."},
+    {texto:"Reduzir o número de consultas oferecidas sem qualquer critério de priorização clínica", correta:false, exp:"Reduzir consultas sem critério de priorização pode prejudicar justamente os casos mais graves, contrariando a lógica de gestão de risco recomendada."},
+    {texto:"Aguardar orientação exclusiva do nível hospitalar antes de tomar qualquer decisão", correta:false, exp:"A gestão do cuidado no território é responsabilidade da própria equipe de APS, que deve tomar decisões de priorização com base no diagnóstico local, e não aguardar orientação externa do nível hospitalar."}
+  ],
+  raciocinio:"Em contextos de demanda muito acima da capacidade operacional, a priorização de grupos vulneráveis e a estratificação de risco são estratégias centrais de gestão do cuidado na APS, permitindo resposta proporcional à necessidade de cada grupo."
+},
+{
+  tema:"Atributos da APS - Acesso",
+  caso:"Wellington, 52 anos, comerciante, nunca havia precisado procurar a UBS de seu bairro, mas começa a sentir dor lombar há três dias, sem história prévia de problemas de saúde relevantes, e decide ir até a unidade sem qualquer agendamento prévio ou encaminhamento de outro serviço.",
+  pergunta:"O atendimento dessa demanda pela equipe de APS exemplifica o atributo de:",
+  opcoes:[
+    {texto:"Coordenação do cuidado", correta:false, exp:"Coordenação do cuidado se refere à integração de informações e ao acompanhamento do percurso do paciente entre diferentes serviços, e não ao primeiro momento de busca por atendimento."},
+    {texto:"Acesso de primeiro contato", correta:true, exp:"O acesso de primeiro contato refere-se à função da APS como local inicial de busca do paciente para novos sintomas e problemas de saúde, antes de qualquer encaminhamento."},
+    {texto:"Longitudinalidade", correta:false, exp:"Longitudinalidade se refere à relação continuada ao longo do tempo com a mesma equipe, e não ao momento específico de busca inicial por um novo problema."},
+    {texto:"Integralidade", correta:false, exp:"Integralidade se refere à consideração de promoção, prevenção, diagnóstico, tratamento e reabilitação de forma ampla, e não especificamente ao atributo de ser a porta de entrada inicial."}
+  ],
+  raciocinio:"O acesso de primeiro contato refere-se à função da APS como local inicial de busca do paciente para seus sintomas e novas necessidades de saúde, sendo um dos atributos centrais que organizam o cuidado na atenção primária."
+},
+{
+  tema:"Atributos da APS - Acesso",
+  caso:"Após identificar, em pesquisa de satisfação, que muitos usuários relatavam dificuldade para conseguir atendimento no mesmo dia para queixas agudas, a gestão da UBS Vila Rica decide reorganizar a recepção, criando um fluxo específico de acolhimento para demandas espontâneas e ampliando o horário de funcionamento em dois dias da semana.",
+  pergunta:"Essa medida busca fortalecer principalmente qual atributo da atenção primária?",
+  opcoes:[
+    {texto:"Acesso de primeiro contato", correta:true, exp:"Ampliar horários e reorganizar o acolhimento tem como objetivo reduzir barreiras e fortalecer o acesso de primeiro contato, permitindo que a população busque a unidade sempre que surgir uma nova necessidade de saúde."},
+    {texto:"Coordenação do cuidado", correta:false, exp:"Coordenação do cuidado se relaciona à integração de informações e ao acompanhamento entre diferentes serviços e profissionais, e não diretamente à ampliação de horários de atendimento inicial."},
+    {texto:"Regionalização", correta:false, exp:"Regionalização se relaciona à organização de serviços entre diferentes municípios e regiões de saúde, e não à ampliação do horário de uma unidade específica para facilitar o primeiro contato."},
+    {texto:"Descentralização administrativa", correta:false, exp:"Descentralização administrativa trata da redistribuição de responsabilidades entre esferas de governo, e não da organização do acesso ao atendimento em uma unidade específica."}
+  ],
+  raciocinio:"Ampliar horários e reorganizar o acolhimento tem como objetivo reduzir barreiras e fortalecer o acesso de primeiro contato, permitindo que a população busque a unidade sempre que surgir uma nova necessidade de saúde."
+},
+{
+  tema:"Atributos da APS - Acesso",
+  caso:"Durante uma aula de introdução à Medicina de Família e Comunidade, um estudante pergunta ao professor qual é, na prática, a diferença entre os termos \"acesso\" e \"acessibilidade\" frequentemente citados nos textos sobre atenção primária à saúde.",
+  pergunta:"A definição mais adequada é:",
+  opcoes:[
+    {texto:"Acessibilidade se refere apenas a horários de funcionamento, enquanto acesso envolve exclusivamente a distância geográfica", correta:false, exp:"Acessibilidade envolve mais do que apenas horários, incluindo localização, acolhimento e barreiras físicas, culturais e administrativas; e acesso não se resume à distância geográfica."},
+    {texto:"Acessibilidade envolve horários, localização, acolhimento e barreiras físicas/culturais/administrativas; o acesso oportuno busca organizar resposta compatível com a necessidade, indo além do simples agendamento", correta:true, exp:"Acesso não se resume a horário; envolve acessibilidade (barreiras físicas, culturais, administrativas) e acesso oportuno (resposta compatível com a necessidade), além de acolhimento e continuidade."},
+    {texto:"Os dois termos são sinônimos e não possuem qualquer diferença conceitual", correta:false, exp:"Acesso e acessibilidade possuem nuances conceituais distintas: acessibilidade trata das condições estruturais e de barreiras, enquanto acesso envolve a organização da resposta à necessidade de saúde."},
+    {texto:"Acesso se refere apenas à presença física do paciente na unidade, sem qualquer relação com a resposta ao problema apresentado", correta:false, exp:"O acesso vai além da simples presença física; envolve também o acesso oportuno, ou seja, uma resposta organizada e compatível com a necessidade apresentada pelo paciente."}
+  ],
+  raciocinio:"Acesso não se resume a horário de funcionamento; envolve acessibilidade (horários, localização, acolhimento, barreiras físicas, culturais e administrativas) e acesso oportuno (organizar resposta compatível com a necessidade), sendo conceitos complementares, mas distintos."
+},
+{
+  tema:"Atributos da APS - Acesso",
+  caso:"Dona Marlene, 68 anos, chega à UBS sem agendamento prévio, visivelmente angustiada, relatando uma dor no peito que começou há cerca de uma hora. A recepcionista, seguindo o protocolo da unidade, encaminha-a imediatamente para a sala de acolhimento, onde a enfermeira realiza escuta qualificada, afere sinais vitais e avalia o grau de prioridade do atendimento antes de definir os próximos passos.",
+  pergunta:"Essa prática representa a aplicação do conceito de:",
+  opcoes:[
+    {texto:"Coordenação do cuidado", correta:false, exp:"Coordenação do cuidado se refere à integração de informações entre diferentes serviços e profissionais, e não especificamente ao momento de escuta e avaliação inicial da demanda."},
+    {texto:"Acolhimento, como parte da organização do acesso na atenção primária", correta:true, exp:"O acolhimento envolve escuta qualificada, avaliação de necessidade e orientação responsável, sendo parte fundamental da organização do acesso na atenção primária à saúde."},
+    {texto:"Hierarquização exclusiva de encaminhamentos", correta:false, exp:"Hierarquização se relaciona à organização dos níveis de complexidade do sistema, e não especificamente à prática de escuta e avaliação inicial descrita no caso."},
+    {texto:"Vigilância epidemiológica", correta:false, exp:"Vigilância epidemiológica se relaciona ao monitoramento de doenças e agravos na população, e não à prática de acolhimento individual descrita no caso."}
+  ],
+  raciocinio:"O acolhimento envolve escuta qualificada, avaliação de necessidade e orientação responsável, sendo parte fundamental da organização do acesso na atenção primária à saúde, especialmente diante de demandas agudas não agendadas."
+},
+{
+  tema:"RAPS e Saúde Mental",
+  caso:"Seu Joaquim, 45 anos, com diagnóstico de esquizofrenia estabilizado, é acompanhado há dois anos pelo CAPS de seu município. Recentemente, a equipe do CAPS identificou que ele vem se isolando cada vez mais em casa desde que parou de frequentar o antigo grupo de convivência do bairro, e discute qual dispositivo da rede poderia ajudá-lo a retomar atividades sociais e de convivência comunitária.",
+  pergunta:"Esse suporte é oferecido, dentro da Rede de Atenção Psicossocial, principalmente por:",
+  opcoes:[
+    {texto:"Leitos de saúde mental em hospital geral", correta:false, exp:"Leitos de saúde mental em hospital geral são destinados a situações que exigem internação de curta duração, e não a atividades de convivência e reinserção social continuada."},
+    {texto:"Centros de convivência", correta:true, exp:"Os centros de convivência fazem parte da RAPS e têm papel na reabilitação psicossocial, promovendo convivência, geração de trabalho/renda e fortalecimento de vínculos comunitários."},
+    {texto:"SAMU 192", correta:false, exp:"O SAMU 192 é um componente da atenção de urgência e emergência da RAPS, não estando relacionado a atividades de convivência e reinserção social."},
+    {texto:"Ambulatórios especializados exclusivamente medicamentosos", correta:false, exp:"Ambulatórios especializados focados apenas em manejo medicamentoso não correspondem à função de convivência e reinserção social atribuída aos centros de convivência dentro da RAPS."}
+  ],
+  raciocinio:"Os centros de convivência fazem parte da Rede de Atenção Psicossocial (RAPS) e têm papel na estratégia de reabilitação psicossocial, promovendo convivência, geração de trabalho e renda e fortalecimento de vínculos comunitários."
+},
+{
+  tema:"RAPS e Saúde Mental",
+  caso:"Durante plantão noturno, uma paciente de 29 anos é trazida por familiares à UBS de urgência apresentando agitação psicomotora intensa, discurso incoerente e comportamento de risco para si mesma, exigindo avaliação psiquiátrica imediata e possível necessidade de internação de curta duração para estabilização do quadro.",
+  pergunta:"Dentro da RAPS, esse tipo de cuidado pode ser oferecido por:",
+  opcoes:[
+    {texto:"Consultório na Rua exclusivamente", correta:false, exp:"O Consultório na Rua é um dispositivo da atenção primária voltado ao acesso de populações em situação de rua, e não o ponto da rede destinado à internação de curta duração em crises agudas."},
+    {texto:"Leitos de saúde mental em hospital geral, entre outros pontos de atenção hospitalar/urgência da rede", correta:true, exp:"A RAPS prevê pontos de atenção hospitalar, como leitos de saúde mental em hospital geral, para situações que exigem internação de curta duração, sempre buscando o menor grau de restrição possível."},
+    {texto:"Centros de convivência", correta:false, exp:"Centros de convivência são voltados à reabilitação psicossocial e ao fortalecimento de vínculos comunitários, e não a situações de crise aguda com risco iminente que exigem internação."},
+    {texto:"Serviços residenciais terapêuticos", correta:false, exp:"Serviços residenciais terapêuticos são voltados à moradia de pessoas egressas de longa internação psiquiátrica, dentro da estratégia de desinstitucionalização, e não ao manejo de crises agudas com risco iminente."}
+  ],
+  raciocinio:"A RAPS prevê pontos de atenção hospitalar, como leitos de saúde mental em hospital geral, para situações que exigem internação de curta duração em crises agudas, sempre buscando o menor grau de restrição necessário e a reinserção social posterior."
+},
+{
+  tema:"RAPS e Saúde Mental",
+  caso:"A Dra. Patrícia, médica de família que atua há cinco anos em um município do interior sem CAPS ou psiquiatra disponível na rede pública local, relata em uma reunião de equipe que, na prática cotidiana, é frequentemente a única profissional de saúde mental à qual boa parte de sua população adstrita tem acesso, especialmente os pacientes mais idosos e de menor renda.",
+  pergunta:"Esse relato reflete diretamente qual papel da APS dentro da Rede de Atenção Psicossocial?",
+  opcoes:[
+    {texto:"A APS não teria qualquer papel relevante em saúde mental, cabendo esse cuidado exclusivamente ao CAPS", correta:false, exp:"Essa afirmação contraria diretamente o relato do caso e o papel reconhecido da APS como frequentemente o único recurso de saúde mental acessível à população."},
+    {texto:"A APS, muitas vezes, é o único recurso de saúde mental ao qual as pessoas têm acesso, exercendo papel central de porta de entrada e acompanhamento", correta:true, exp:"Os médicos de família são, frequentemente, os únicos recursos de saúde mental a que as pessoas têm acesso, o que reforça o papel estratégico da APS como porta de entrada, acolhimento e vínculo longitudinal dentro da RAPS."},
+    {texto:"A APS deveria encaminhar automaticamente todo paciente com qualquer queixa emocional para o CAPS, sem qualquer manejo inicial", correta:false, exp:"A APS tem papel ativo no acolhimento, avaliação inicial e manejo de quadros compatíveis com sua capacidade, e não apenas de encaminhamento automático de toda queixa emocional."},
+    {texto:"A APS só deveria atuar em saúde mental após autorização expressa do serviço especializado", correta:false, exp:"A APS atua de forma direta e contínua em saúde mental, especialmente onde é o único recurso disponível, não dependendo de autorização prévia do serviço especializado para iniciar o cuidado."}
+  ],
+  raciocinio:"Os médicos de família são, frequentemente, os únicos recursos de saúde mental a que as pessoas têm acesso, o que reforça o papel estratégico da APS como porta de entrada, acolhimento e vínculo longitudinal dentro da Rede de Atenção Psicossocial."
+},
+{
+  tema:"RAPS e Saúde Mental",
+  caso:"A equipe de Saúde da Família da UBS Campo Belo passou a contar, desde o mês passado, com o apoio de uma psiquiatra do CAPS regional, que participa quinzenalmente de reuniões de discussão de casos complexos de saúde mental junto à equipe, orientando condutas sem necessariamente atender diretamente todos os pacientes discutidos.",
+  pergunta:"Essa estratégia de articulação entre APS e rede especializada é conhecida como:",
+  opcoes:[
+    {texto:"Referência e contrarreferência simples", correta:false, exp:"O apoio matricial vai além da simples referência e contrarreferência, envolvendo discussão de casos e educação continuada da equipe, e não apenas o encaminhamento formal de pacientes."},
+    {texto:"Apoio matricial", correta:true, exp:"O apoio matricial é uma tecnologia de gestão e educação que apoia as equipes de saúde da família, indo além da simples referência e contrarreferência, ampliando a resolutividade e a autonomia da APS."},
+    {texto:"Notificação compulsória", correta:false, exp:"Notificação compulsória se refere à comunicação obrigatória de agravos como violência a órgãos competentes, não tendo relação com a articulação entre APS e especialistas descrita no caso."},
+    {texto:"Triagem neonatal", correta:false, exp:"Triagem neonatal se refere aos testes realizados logo após o nascimento, sem qualquer relação com a articulação entre equipes de saúde da família e especialistas em saúde mental."}
+  ],
+  raciocinio:"O apoio matricial é uma tecnologia de gestão e educação que apoia as equipes de saúde da família, indo além da simples referência e contrarreferência, ampliando a resolutividade, a autonomia da APS e a qualidade do cuidado em saúde mental."
+},
+{
+  tema:"RAPS e Saúde Mental",
+  caso:"Dona Iracema, 67 anos, viveu internada em um hospital psiquiátrico por mais de 30 anos após diagnóstico de esquizofrenia na juventude. Como parte do processo de reforma psiquiátrica em curso no estado, ela está sendo desospitalizada e passará a viver em um serviço residencial terapêutico no mesmo bairro onde nasceu, com apoio de equipe multiprofissional.",
+  pergunta:"Esse processo, orientado pelos princípios da Reforma Psiquiátrica, é chamado de:",
+  opcoes:[
+    {texto:"Institucionalização", correta:false, exp:"Institucionalização é o processo oposto, relacionado à manutenção do paciente em ambiente asilar/hospitalar, e não ao retorno à convivência familiar e comunitária."},
+    {texto:"Desinstitucionalização, que exige rede de suporte integrada no território", correta:true, exp:"A desinstitucionalização vai além de reduzir internações: busca substituir a lógica asilar por cuidado comunitário e territorial, exigindo rede de suporte integrada para que a pessoa volte a viver com sua família e comunidade."},
+    {texto:"Judicialização da saúde", correta:false, exp:"Judicialização da saúde se refere ao uso de processos judiciais para garantir acesso a serviços ou insumos de saúde, não tendo relação direta com o processo de desospitalização psiquiátrica descrito."},
+    {texto:"Hierarquização assistencial", correta:false, exp:"Hierarquização assistencial se refere à organização dos serviços em níveis crescentes de complexidade, e não ao processo específico de retorno do paciente à vida comunitária após longa internação."}
+  ],
+  raciocinio:"A desinstitucionalização vai além de reduzir internações: busca substituir a lógica asilar por cuidado comunitário e territorial, exigindo rede de suporte integrada para que a pessoa volte a viver com sua família e comunidade, com participação ativa e respeito à cidadania."
+},
+{
+  tema:"Avaliação Nutricional - Antropometria",
+  caso:"Durante a consulta de puericultura de rotina, o médico de família plota na Caderneta da Criança os dados antropométricos de Heitor, 18 meses, filho de uma família em situação de insegurança alimentar identificada em visitas domiciliares anteriores. Ao calcular o escore-Z de peso para idade, o valor obtido é de −2,3 desvios-padrão em relação à referência da OMS.",
+  pergunta:"Esse achado é classificado como:",
+  opcoes:[
+    {texto:"Peso elevado", correta:false, exp:"Peso elevado corresponde a escore-Z acima de +2 desvios-padrão no índice peso/idade, e não abaixo de −2 desvios-padrão, como descrito no caso."},
+    {texto:"Baixo peso", correta:true, exp:"Valores de peso/idade abaixo de −2 desvios-padrão (escore-Z) são classificados como baixo peso, conforme a interpretação padronizada dos índices antropométricos."},
+    {texto:"Estatura elevada", correta:false, exp:"Estatura elevada se refere ao índice estatura/idade, e não ao índice peso/idade descrito no caso, sendo, além disso, um valor acima (e não abaixo) de +2 desvios-padrão."},
+    {texto:"Macrocefalia", correta:false, exp:"Macrocefalia se refere ao índice perímetro cefálico/idade acima de +2 desvios-padrão, não tendo relação com o índice peso/idade abaixo de −2 desvios-padrão descrito no caso."}
+  ],
+  raciocinio:"Valores de peso/idade abaixo de −2 desvios-padrão (escore-Z) são classificados como baixo peso, conforme a interpretação padronizada dos índices antropométricos utilizados na vigilância do crescimento infantil."
+},
+{
+  tema:"Avaliação Nutricional - Antropometria",
+  caso:"Dona Sueli leva seu neto Kauê, de 4 anos, à consulta de puericultura, já que os pais trabalham em horário integral. Ao calcular o índice de massa corporal para idade da criança, que vem ganhando peso de forma expressiva nos últimos meses, o médico de família obtém um escore-Z de +2,5 desvios-padrão.",
+  pergunta:"Esse resultado é compatível com a classificação de:",
+  opcoes:[
+    {texto:"Magreza", correta:false, exp:"Magreza corresponde a escore-Z abaixo de −2 desvios-padrão no índice IMC/idade, e não a um valor acima de +2 desvios-padrão, como descrito no caso."},
+    {texto:"Sobrepeso/obesidade", correta:true, exp:"Escores-Z de IMC/idade acima de +2 desvios-padrão indicam sobrepeso ou obesidade, sendo a triagem recomendada a partir dos 2 anos em toda consulta de puericultura."},
+    {texto:"Estatura elevada", correta:false, exp:"Estatura elevada se refere ao índice estatura/idade, e não ao índice de massa corporal descrito no caso."},
+    {texto:"Microcefalia", correta:false, exp:"Microcefalia se refere ao índice perímetro cefálico/idade abaixo de −2 desvios-padrão, não tendo relação com o índice de massa corporal apresentado no caso."}
+  ],
+  raciocinio:"Escores-Z de IMC/idade acima de +2 desvios-padrão indicam sobrepeso ou obesidade infantil, sendo a triagem por esse índice recomendada a partir dos 2 anos em toda consulta de puericultura, dado o crescimento da prevalência desse agravo."
+},
+{
+  tema:"Avaliação Nutricional - Antropometria",
+  caso:"Na consulta de puericultura de Davi, 8 meses, filho de pais adolescentes em sua primeira experiência de parentalidade, o médico de família mede o perímetro cefálico da criança, conforme protocolo de toda consulta até os 2 anos, e calcula um escore-Z de −2,4 desvios-padrão, apesar de o peso e a estatura da criança estarem dentro da normalidade para a idade.",
+  pergunta:"Esse achado, independentemente de outros índices antropométricos estarem normais, exige:",
+  opcoes:[
+    {texto:"Nenhuma conduta adicional, pois isoladamente não teria relevância clínica", correta:false, exp:"Alterações do perímetro cefálico têm relevância clínica isolada, exigindo investigação, independentemente de os demais índices antropométricos estarem normais."},
+    {texto:"Investigação neurológica, dado que alterações de perímetro cefálico refletem o crescimento do sistema nervoso central", correta:true, exp:"Alterações do perímetro cefálico (nesse caso, compatível com microcefalia) indicam necessidade de investigação neurológica, independentemente do resultado de outros índices antropométricos."},
+    {texto:"Apenas reforço nutricional, sem qualquer investigação adicional", correta:false, exp:"O achado de alteração de perímetro cefálico exige investigação neurológica específica, e não apenas reforço nutricional isolado, já que reflete o crescimento do sistema nervoso central."},
+    {texto:"Encaminhamento exclusivo para avaliação oftalmológica", correta:false, exp:"O perímetro cefálico reflete o crescimento do sistema nervoso central, sendo a investigação neurológica a conduta indicada, e não o encaminhamento oftalmológico isolado."}
+  ],
+  raciocinio:"Alterações do perímetro cefálico indicam necessidade de investigação neurológica, independentemente de outros índices antropométricos estarem normais, dado que esse parâmetro reflete diretamente o crescimento do sistema nervoso central."
+},
+{
+  tema:"Avaliação Nutricional - Antropometria",
+  caso:"Ao longo de três consultas consecutivas de puericultura, o médico de família nota que uma criança de 14 meses, filha de uma família que enfrenta dificuldades financeiras recentes após a demissão do pai, vem apresentando cruzamento descendente de dois canais de percentil na curva de peso/estatura, associado a estagnação do ganho ponderal esperado para a idade nas últimas semanas.",
+  pergunta:"Esse padrão de crescimento é altamente sugestivo de:",
+  opcoes:[
+    {texto:"Crescimento normal, dentro da variabilidade esperada", correta:false, exp:"Cruzamento descendente de dois canais de percentil associado a estagnação do ganho ponderal ultrapassa a variabilidade normal esperada, configurando sinal de alerta para falha de crescimento."},
+    {texto:"Falha de crescimento, exigindo investigação etiológica e suporte nutricional", correta:true, exp:"O cruzamento descendente de dois canais de percentil e a estagnação do ganho ponderal são critérios que devem levantar suspeita de falha de crescimento, exigindo investigação etiológica, suporte nutricional e acompanhamento mais frequente."},
+    {texto:"Obesidade infantil", correta:false, exp:"O padrão descrito (cruzamento descendente de percentis e estagnação do ganho ponderal) é sugestivo de déficit, e não de excesso de peso, não sendo compatível com obesidade infantil."},
+    {texto:"Desenvolvimento neuropsicomotor inadequado, sem relação com crescimento físico", correta:false, exp:"O achado descrito se refere especificamente ao crescimento físico (peso/estatura), e não diretamente ao desenvolvimento neuropsicomotor, ainda que ambos possam estar associados em alguns quadros."}
+  ],
+  raciocinio:"O cruzamento descendente de dois canais de percentil na curva de peso/estatura, associado à estagnação do ganho ponderal esperado para a idade, são critérios que devem levantar suspeita de falha de crescimento, exigindo investigação etiológica, suporte nutricional e acompanhamento mais frequente."
+}
+];
+
+/* =========================================================
+   MOTOR DO QUIZ
+   ========================================================= */
+const TOTAL = QUESTIONS.length;
+let session = null; // {order, altOrders, answers, currentPos}
+
+function shuffleArray(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function newSession(){
+  const order = shuffleArray(QUESTIONS.map((_,i)=>i));
+  const altOrders = {};
+  QUESTIONS.forEach((q,qi)=>{
+    altOrders[qi] = shuffleArray(q.opcoes.map((_,i)=>i));
+  });
+  const answers = {};
+  QUESTIONS.forEach((_,qi)=>{
+    answers[qi] = {selectedShuffledIdx:null, confirmed:false, skipped:false};
+  });
+  session = {order, altOrders, answers, currentPos:0};
+}
+
+function currentQIndex(){ return session.order[session.currentPos]; }
+
+/* ---------- RENDER: INTRO ---------- */
+function renderIntro(){
+  document.getElementById('screenIntro').classList.remove('hidden');
+  document.getElementById('screenQuiz').classList.add('hidden');
+  document.getElementById('screenResults').classList.add('hidden');
+  document.getElementById('headerActions').innerHTML = '';
+
+  const temas = [...new Set(QUESTIONS.map(q=>q.tema))];
+  document.getElementById('screenIntro').innerHTML = `
+    <div class="intro">
+      <h1>Simulado de Medicina de Família e Comunidade</h1>
+      <div class="intro-stats">
+        <div class="intro-stat"><div class="num">70</div><div class="lbl">Questões</div></div>
+        <div class="intro-stat"><div class="num">4</div><div class="lbl">Alternativas cada</div></div>
+        <div class="intro-stat"><div class="num">19</div><div class="lbl">Eixos temáticos</div></div>
+      </div>
+      <div class="intro-themes">
+        ${temas.map(t=>`<div>▪ ${t}</div>`).join('')}
+      </div>
+      <button class="btn-primary" style="font-size:15px;padding:13px 28px;" onclick="startQuiz()">Iniciar Simulado</button>
+    </div>
+  `;
+}
+
+function startQuiz(){
+  newSession();
+  renderQuiz();
+}
+
+/* ---------- RENDER: HEADER ACTIONS (during quiz) ---------- */
+function renderHeaderActions(){
+  document.getElementById('headerActions').innerHTML = `
+    <button class="btn-ghost btn-sm" onclick="confirmRestart()">Reiniciar</button>
+  `;
+}
+
+function confirmRestart(){
+  showConfirmModal(
+    'Reiniciar simulado',
+    'Reiniciar o simulado do zero? Todas as respostas atuais serão perdidas.',
+    ()=>{
+      newSession();
+      renderQuiz();
+    }
+  );
+}
+
+/* ---------- STATUS HELPERS ---------- */
+function qStatus(qi){
+  const a = session.answers[qi];
+  if(a.confirmed) return 'answered';
+  if(a.skipped) return 'skipped';
+  return 'unanswered';
+}
+function countStatus(){
+  let answered=0, skipped=0, unanswered=0;
+  session.order.forEach(qi=>{
+    const s = qStatus(qi);
+    if(s==='answered') answered++;
+    else if(s==='skipped') skipped++;
+    else unanswered++;
+  });
+  return {answered,skipped,unanswered};
+}
+
+/* ---------- RENDER: QUIZ SCREEN ---------- */
+function renderQuiz(){
+  document.getElementById('screenIntro').classList.add('hidden');
+  document.getElementById('screenResults').classList.add('hidden');
+  const el = document.getElementById('screenQuiz');
+  el.classList.remove('hidden');
+  renderHeaderActions();
+
+  const qi = currentQIndex();
+  const q = QUESTIONS[qi];
+  const ans = session.answers[qi];
+  const {answered,skipped,unanswered} = countStatus();
+  const pos = session.currentPos;
+
+  // progress bar segments
+  const pctAns = (answered/TOTAL*100).toFixed(2);
+  const pctSkip = (skipped/TOTAL*100).toFixed(2);
+  const pctUn = (unanswered/TOTAL*100).toFixed(2);
+
+  let bodyHtml = `
+    <div class="progress-wrap">
+      <div class="progress-top">
+        <div class="progress-label">QUESTÃO ${pos+1} DE ${TOTAL}</div>
+        <div class="progress-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:var(--ok)"></span>Respondidas: ${answered}</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--warn)"></span>Puladas: ${skipped}</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--text-faint)"></span>Restantes: ${unanswered}</span>
+        </div>
+      </div>
+      <div class="bar-track">
+        <div class="bar-seg" style="width:${pctAns}%;background:var(--ok)"></div>
+        <div class="bar-seg" style="width:${pctSkip}%;background:var(--warn)"></div>
+        <div class="bar-seg" style="width:${pctUn}%;background:var(--bg-panel-2)"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="qnum">QUESTÃO ${pos+1}</div>
+      ${q.caso ? `<div class="caso-box"><div class="caso-label">Caso clínico</div>${q.caso}</div>` : ''}
+      <div class="pergunta">${q.pergunta}</div>
+      <div class="opcoes" id="opcoesContainer"></div>
+      <div id="feedbackContainer"></div>
+    </div>
+
+    <div class="navbar">
+      <div class="navbar-left">
+        <button class="btn-secondary" onclick="goPrev()" ${pos===0?'disabled':''}>← Anterior</button>
+        <button class="btn-ghost" onclick="skipCurrent()" ${ans.confirmed?'disabled':''}>Pular</button>
+      </div>
+      <div class="navbar-right">
+        <button class="btn-secondary" onclick="goNext()" ${pos===TOTAL-1?'disabled':''}>Próxima →</button>
+        <button class="btn-danger" onclick="tryFinish()">Finalizar simulado</button>
+      </div>
+    </div>
+  `;
+  el.innerHTML = bodyHtml;
+  renderOpcoes();
+}
+
+function renderOpcoes(){
+  const qi = currentQIndex();
+  const q = QUESTIONS[qi];
+  const ans = session.answers[qi];
+  const order = session.altOrders[qi]; // array of original opt indices in shuffled display order
+  const container = document.getElementById('opcoesContainer');
+  const letters = ['A','B','C','D'];
+
+  let html = '';
+  order.forEach((origOptIdx, displayIdx)=>{
+    const opt = q.opcoes[origOptIdx];
+    const isSelected = ans.selectedShuffledIdx === displayIdx;
+    let cls = 'opcao';
+    let icon = '';
+    if(ans.confirmed){
+      cls += ' locked';
+      if(opt.correta){ cls += ' correta-reveal'; icon = '✓'; }
+      else if(isSelected && !opt.correta){ cls += ' incorreta-reveal'; icon = '✗'; }
+    } else if(isSelected){
+      cls += ' selected';
+    }
+    html += `
+      <div class="${cls}" onclick="${ans.confirmed?'':`selectOption(${displayIdx})`}">
+        <div class="opcao-letra">${letters[displayIdx]}</div>
+        <div class="opcao-texto">${opt.texto}</div>
+        ${icon ? `<div class="opcao-icon">${icon}</div>` : ''}
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+
+  // feedback
+  const fc = document.getElementById('feedbackContainer');
+  if(ans.confirmed){
+    const selectedOrigIdx = order[ans.selectedShuffledIdx];
+    const selectedOpt = q.opcoes[selectedOrigIdx];
+    const isCorrect = selectedOpt.correta;
+    let expHtml = '';
+    order.forEach((origOptIdx, displayIdx)=>{
+      const opt = q.opcoes[origOptIdx];
+      expHtml += `<div class="alt-exp"><b>${letters[displayIdx]}.</b> ${opt.texto} — ${opt.exp}</div>`;
+    });
+    fc.innerHTML = `
+      <div class="feedback ${isCorrect?'correct':'incorrect'}">
+        <div class="feedback-title">${isCorrect?'✓ Resposta correta':'✗ Resposta incorreta'}</div>
+        <div class="feedback-block">
+          <div class="feedback-label">Raciocínio</div>
+          <div class="feedback-text">${q.raciocinio}</div>
+        </div>
+        <div class="feedback-block">
+          <div class="feedback-label">Análise de todas as alternativas</div>
+          ${expHtml}
+        </div>
+      </div>
+    `;
+  } else {
+    fc.innerHTML = '';
+  }
+}
+
+function selectOption(displayIdx){
+  const qi = currentQIndex();
+  const ans = session.answers[qi];
+  if(ans.confirmed) return;
+  ans.selectedShuffledIdx = displayIdx;
+  ans.skipped = false;
+  ans.confirmed = true; // clicar na alternativa já confirma a resposta
+  renderQuiz();
+}
+
+function skipCurrent(){
+  const qi = currentQIndex();
+  const ans = session.answers[qi];
+  if(ans.confirmed) return;
+  ans.skipped = true;
+  ans.selectedShuffledIdx = null;
+  goNext(true);
+}
+
+function goNext(fromSkip){
+  if(session.currentPos < TOTAL-1){
+    session.currentPos++;
+    renderQuiz();
+  } else if(fromSkip){
+    renderQuiz();
+  }
+}
+function goPrev(){
+  if(session.currentPos>0){
+    session.currentPos--;
+    renderQuiz();
+  }
+}
+
+function tryFinish(){
+  const {unanswered, skipped} = countStatus();
+  const pending = unanswered + skipped;
+  if(pending > 0){
+    showConfirmModal(
+      'Finalizar simulado',
+      `Ainda há ${pending} questão(ões) não respondida(s) ou pulada(s). Elas serão contabilizadas como não respondidas no resultado final. Deseja finalizar mesmo assim?`,
+      ()=>renderResults()
+    );
+  } else {
+    renderResults();
+  }
+}
+
+/* ---------- CUSTOM CONFIRM MODAL ---------- */
+function showConfirmModal(title, message, onConfirm){
+  const root = document.getElementById('modalRoot');
+  root.innerHTML = `
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal-box">
+        <div class="modal-title">${title}</div>
+        <div class="modal-msg">${message}</div>
+        <div class="modal-actions">
+          <button class="btn-ghost" id="modalCancelBtn">Cancelar</button>
+          <button class="btn-primary" id="modalConfirmBtn">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  `;
+  const overlay = document.getElementById('modalOverlay');
+  const close = ()=>{ root.innerHTML = ''; };
+  document.getElementById('modalCancelBtn').onclick = close;
+  document.getElementById('modalConfirmBtn').onclick = ()=>{
+    close();
+    onConfirm();
+  };
+  overlay.onclick = (e)=>{ if(e.target===overlay) close(); };
+}
+
+/* ---------- ALLOW EDITING CONFIRMED ANSWERS (before finalize) ---------- */
+// Add a small "alterar resposta" affordance: clicking a locked option before finalization reopens it.
+document.addEventListener('click', function(e){
+  const optEl = e.target.closest('.opcao.locked');
+  if(optEl && session){
+    const qi = currentQIndex();
+    const ans = session.answers[qi];
+    if(ans.confirmed){
+      // reopen for editing
+      ans.confirmed = false;
+      renderOpcoes();
+    }
+  }
+});
+
+/* ---------- RESULTS ---------- */
+function renderResults(){
+  document.getElementById('screenIntro').classList.add('hidden');
+  document.getElementById('screenQuiz').classList.add('hidden');
+  document.getElementById('screenResults').classList.remove('hidden');
+  document.getElementById('headerActions').innerHTML = '';
+
+  let correct=0, incorrect=0, answered=0, skippedOrUn=0;
+  const themeStats = {};
+
+  QUESTIONS.forEach((q,qi)=>{
+    const ans = session.answers[qi];
+    if(!themeStats[q.tema]) themeStats[q.tema] = {correct:0, total:0, answered:0};
+    if(ans.confirmed){
+      answered++;
+      const order = session.altOrders[qi];
+      const selOrig = order[ans.selectedShuffledIdx];
+      const isCorrect = q.opcoes[selOrig].correta;
+      themeStats[q.tema].total++;
+      themeStats[q.tema].answered++;
+      if(isCorrect){ correct++; themeStats[q.tema].correct++; }
+      else { incorrect++; }
+    } else {
+      skippedOrUn++;
+      themeStats[q.tema].total++;
+    }
+  });
+
+  const pct = answered>0 ? ((correct/answered)*100).toFixed(1) : '0.0';
+
+  let themeHtml = '';
+  Object.keys(themeStats).forEach(tema=>{
+    const s = themeStats[tema];
+    const p = s.answered>0 ? (s.correct/s.answered*100) : 0;
+    themeHtml += `
+      <div class="theme-row">
+        <div class="theme-name">${tema}</div>
+        <div class="theme-bar-track"><div class="theme-bar-fill" style="width:${p}%"></div></div>
+        <div class="theme-count">${s.correct}/${s.answered} (${s.total} no banco)</div>
+      </div>
+    `;
+  });
+
+  document.getElementById('screenResults').innerHTML = `
+    <div class="results">
+      <h1>Resultado do Simulado</h1>
+      <div class="results-grid">
+        <div class="result-stat ok"><div class="num">${correct}</div><div class="lbl">Acertos</div></div>
+        <div class="result-stat bad"><div class="num">${incorrect}</div><div class="lbl">Erros</div></div>
+        <div class="result-stat acc"><div class="num">${pct}%</div><div class="lbl">Aproveitamento</div></div>
+        <div class="result-stat"><div class="num">${answered}</div><div class="lbl">Respondidas</div></div>
+        <div class="result-stat warn"><div class="num">${skippedOrUn}</div><div class="lbl">Puladas/Não respondidas</div></div>
+      </div>
+      <div class="theme-breakdown">
+        <h2>Desempenho por eixo temático</h2>
+        ${themeHtml}
+      </div>
+      <div class="results-actions">
+        <button class="btn-secondary" onclick="renderQuiz()">Revisar questões</button>
+        <button class="btn-primary" onclick="startQuiz()">Refazer simulado (nova ordem)</button>
+      </div>
+      <div class="footnote">A ordem das questões e das alternativas é sorteada a cada novo simulado.</div>
+    </div>
+  `;
+}
+
+/* ---------- INIT ---------- */
+renderIntro();
+</script>
+</body>
+</html>
